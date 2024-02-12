@@ -23,12 +23,19 @@ public class ChooseActivityTypeDialogFragment extends DialogFragment implements 
 
     private static final String CHOOSE_ACTIVITY_TYPE_DIALOG_TAG = "chooseActivityType";
 
-    @Deprecated
+    /**
+     * @deprecated
+     */
+    @Deprecated(since="4.2", forRemoval=true)
     public static void showDialog(FragmentManager fragmentManager, Context context, String activityTypeLocalized) {
         ActivityType activityType = ActivityType.findByLocalizedString(context, activityTypeLocalized);
         showDialog(fragmentManager, activityType);
     }
 
+    /**
+     * @deprecated
+     */
+    @Deprecated(since="4.2", forRemoval=true)
     public static void showDialog(FragmentManager fragmentManager, ActivityType activityType) {
         new ChooseActivityTypeDialogFragment(activityType).show(fragmentManager, ChooseActivityTypeDialogFragment.CHOOSE_ACTIVITY_TYPE_DIALOG_TAG);
     }
