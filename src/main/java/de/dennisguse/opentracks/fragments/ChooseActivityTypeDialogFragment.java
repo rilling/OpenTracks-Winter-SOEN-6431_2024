@@ -64,7 +64,7 @@ public class ChooseActivityTypeDialogFragment extends DialogFragment implements 
             ActivityType.WORKOUT
     );
 
-    private static int getPosition(Context context, ActivityType activityType) {
+    private static int getPosition(ActivityType activityType) {
         if (activityType == null) {
             return -1;
         }
@@ -100,7 +100,7 @@ public class ChooseActivityTypeDialogFragment extends DialogFragment implements 
         }
 
         final ChooseActivityTypeImageAdapter imageAdapter = new ChooseActivityTypeImageAdapter(iconDrawableIds);
-        int position = getPosition(getContext(), preselectedActivityType);
+        int position = getPosition(preselectedActivityType);
         if (position != -1) {
             imageAdapter.setSelected(position);
         }
