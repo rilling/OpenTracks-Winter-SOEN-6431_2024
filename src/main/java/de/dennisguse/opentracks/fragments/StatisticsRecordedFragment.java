@@ -141,22 +141,22 @@ public class StatisticsRecordedFragment extends Fragment {
         if (isResumed()) {
             getActivity().runOnUiThread(() -> {
                 if (isResumed()) {
-                    Track trackWithId = contentProviderUtils.getTrack(trackId);
-                    if (trackWithId == null) {
-                        Log.e(TAG, "trackWithId cannot be null");
+                    Track trackWithIds = contentProviderUtils.getTrack(trackId);
+                    if (trackWithIds == null) {
+                        Log.e(TAG, "trackWithIds cannot be null");
                         getActivity().finish();
                         return;
                     }
 
                     sensorStatistics = contentProviderUtils.getSensorStats(trackId);
 
-                    boolean prefsChanged = this.track == null || (!this.track.getActivityTypeLocalized().equals(trackWithId.getActivityTypeLocalized()));
-                    this.track = trackWithId;
+                    boolean prefsChanged = this.track == null || (!this.track.getActivityTypeLocalized().equals(trackWithIds.getActivityTypeLocalized()));
+                    this.track = trackWithIds;
                     if (prefsChanged) {
                         sharedPreferenceChangeListener.onSharedPreferenceChanged(null, getString(R.string.stats_rate_key));
                     }
 
-                    loadTrackDescription(trackWithId);
+                    loadTrackDescription(trackWithIds);
                     updateUI();
                     updateSensorUI();
 
