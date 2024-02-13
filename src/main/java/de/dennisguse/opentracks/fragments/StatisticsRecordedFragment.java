@@ -229,12 +229,12 @@ public class StatisticsRecordedFragment extends Fragment {
 
         // Set altitude gain and loss
         {
-            Float altitudeGain_m = trackStatistics.getTotalAltitudeGain();
+            Float altitudeGain = trackStatistics.getTotalAltitudeGain();
             Float altitudeLoss_m = trackStatistics.getTotalAltitudeLoss();
 
             Pair<String, String> parts;
 
-            parts = StringUtils.getAltitudeParts(getContext(), altitudeGain_m, unitSystem);
+            parts = StringUtils.getAltitudeParts(getContext(), altitudeGain, unitSystem);
             viewBinding.statsAltitudeGainValue.setText(parts.first);
             viewBinding.statsAltitudeGainUnit.setText(parts.second);
 
@@ -242,7 +242,7 @@ public class StatisticsRecordedFragment extends Fragment {
             viewBinding.statsAltitudeLossValue.setText(parts.first);
             viewBinding.statsAltitudeLossUnit.setText(parts.second);
 
-            boolean show = altitudeGain_m != null && altitudeLoss_m != null;
+            boolean show = altitudeGain != null && altitudeLoss_m != null;
             viewBinding.statsAltitudeGroup.setVisibility(show ? View.VISIBLE : View.GONE);
         }
     }
