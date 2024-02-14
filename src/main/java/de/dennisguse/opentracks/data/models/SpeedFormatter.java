@@ -14,15 +14,12 @@ public class SpeedFormatter {
 
     private final Resources resources;
 
-    private final int decimalCount;
-
     private final UnitSystem unitSystem;
 
     private final boolean reportSpeedOrPace;
 
-    private SpeedFormatter(Resources resources, int decimalCount, UnitSystem unitSystem, boolean reportSpeedOrPace) {
+    private SpeedFormatter(Resources resources, UnitSystem unitSystem, boolean reportSpeedOrPace) {
         this.resources = resources;
-        this.decimalCount = decimalCount;
         this.unitSystem = unitSystem;
         this.reportSpeedOrPace = reportSpeedOrPace;
     }
@@ -98,7 +95,7 @@ public class SpeedFormatter {
         }
 
         public SpeedFormatter build(Resources resource) {
-            return new SpeedFormatter(resource, decimalCount, unitSystem, reportSpeedOrPace);
+            return new SpeedFormatter(resource, unitSystem, reportSpeedOrPace);
         }
 
         public SpeedFormatter build(Context context) {
