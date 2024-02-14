@@ -174,7 +174,7 @@ public class ShareContentProvider extends CustomContentProvider {
                 }
                 default:
                     //To break the switch
-                    break;
+                    continue;
             }
         }
 
