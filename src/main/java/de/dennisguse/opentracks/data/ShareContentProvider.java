@@ -172,6 +172,9 @@ public class ShareContentProvider extends CustomContentProvider {
                     cols[i] = OpenableColumns.SIZE;
                     values[i++] = -1; //Report unknown size; if applications need to know, one need to generate the file here also (count bytes that are written to OutputStream.
                 }
+                default:
+                    //To break the switch
+                    break;
             }
         }
 
