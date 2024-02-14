@@ -2,7 +2,7 @@ package de.dennisguse.opentracks.data.models;
 
 import java.time.Duration;
 
-public record Cadence(float value_rpm) {
+public record Cadence(float valueRPM) {
 
     public static Cadence of(float value, Duration duration) {
         if (duration.isZero()) {
@@ -12,8 +12,8 @@ public record Cadence(float value_rpm) {
         return new Cadence(value / (duration.toMillis() / (float) Duration.ofMinutes(1).toMillis()));
     }
 
-    public static Cadence of(float value_rpm) {
-        return new Cadence(value_rpm);
+    public static Cadence of(float valueRPM) {
+        return new Cadence(valueRPM);
     }
 
     public static Cadence zero() {
@@ -21,6 +21,6 @@ public record Cadence(float value_rpm) {
     }
 
     public float getRPM() {
-        return value_rpm;
+        return valueRPM;
     }
 }
