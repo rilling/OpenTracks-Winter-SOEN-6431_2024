@@ -84,23 +84,28 @@ public class ShareUtils {
         }
 
         String mime = null;
-
+        boolean shouldbreak = false;
         ContentProviderUtils contentProviderUtils = new ContentProviderUtils(context);
         ArrayList<Uri> uris = new ArrayList<>();
         for (Marker.Id markerId : markerIds) {
             Marker marker = contentProviderUtils.getMarker(markerId);
             if (marker == null) {
                 Log.e(TAG, "MarkerId " + markerId.id() + " could not be resolved.");
-                continue;
+                shouldbreak = true;
             }
-            if (marker.getPhotoURI() == null) {
+            else if (marker.getPhotoURI() == null) {
                 Log.e(TAG, "MarkerId " + markerId.id() + " has no picture.");
-                continue;
+                shouldbreak = true;
+            }
+            else{
+                mime = context.getContentResolver().getType(marker.getPhotoURI());
+                uris.add(marker.getPhotoURI());
             }
 
-            mime = context.getContentResolver().getType(marker.getPhotoURI());
-
-            uris.add(marker.getPhotoURI());
+            if(shouldbreak){
+                shouldbreak = false;
+                continue;
+            }
         }
 
         if (uris.isEmpty()) {
