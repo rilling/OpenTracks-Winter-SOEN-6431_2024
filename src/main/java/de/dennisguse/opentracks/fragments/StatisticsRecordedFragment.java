@@ -188,7 +188,7 @@ public class StatisticsRecordedFragment extends Fragment {
 
     }
 
-    private void updateUISetActivityType(TrackStatistics trackStatistics) {
+    private void updateUISetActivityType() {
         Context context = getContext();
         String localizedActivityType = track.getActivityTypeLocalized();
         int iconDrawableId = ActivityType.findByLocalizedString(context, localizedActivityType)
@@ -252,7 +252,7 @@ public class StatisticsRecordedFragment extends Fragment {
         updateUISetTotalDistance(trackStatistics);
 
         // Set activity type
-        updateUISetActivityType(trackStatistics);
+        updateUISetActivityType();
 
         // Set time and start datetime
         updatedUISetTimeAndStartDatetime(trackStatistics);
