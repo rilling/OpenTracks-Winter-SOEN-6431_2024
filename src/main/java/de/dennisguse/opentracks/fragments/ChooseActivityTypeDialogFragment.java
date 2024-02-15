@@ -110,7 +110,7 @@ public class ChooseActivityTypeDialogFragment extends DialogFragment implements 
         return viewBinding.getRoot();
     }
 
-    @Overridegit add 
+    @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         try {
