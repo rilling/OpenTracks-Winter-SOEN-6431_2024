@@ -50,6 +50,7 @@ captures/
 /out/
 
 # User-specific configurations
+.idea/sonarlint
 .idea/.name
 .idea/caches/
 .idea/compiler.xml
