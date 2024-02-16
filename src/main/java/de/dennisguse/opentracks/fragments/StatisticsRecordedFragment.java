@@ -35,6 +35,7 @@ import de.dennisguse.opentracks.TrackRecordedActivity;
 import de.dennisguse.opentracks.data.ContentProviderUtils;
 import de.dennisguse.opentracks.data.models.ActivityType;
 import de.dennisguse.opentracks.data.models.DistanceFormatter;
+import de.dennisguse.opentracks.data.models.Speed;
 import de.dennisguse.opentracks.data.models.SpeedFormatter;
 import de.dennisguse.opentracks.data.models.Track;
 import de.dennisguse.opentracks.databinding.StatisticsRecordedBinding;
@@ -201,7 +202,7 @@ public class StatisticsRecordedFragment extends Fragment {
         viewBinding.statsTotalTimeValue.setText(StringUtils.formatElapsedTime(trackStatistics.getTotalTime()));
     }
 
-    private void updatedAverageSpeed(TrackStatistics trackStatistics) {
+    private void updatedAverageSpeed(TrackStatistics trackStatistics, SpeedFormatter formatter) {
         viewBinding.statsAverageSpeedLabel
                 .setText(preferenceReportSpeed ? R.string.stats_average_speed : R.string.stats_average_pace);
 
@@ -210,7 +211,7 @@ public class StatisticsRecordedFragment extends Fragment {
         viewBinding.statsAverageSpeedUnit.setText(parts.second);
     }
 
-    private void updatedMaxSpeed(TrackStatistics trackStatistics) {
+    private void updatedMaxSpeed(TrackStatistics trackStatistics, SpeedFormatter formatter) {
         viewBinding.statsMaxSpeedLabel
                 .setText(preferenceReportSpeed ? R.string.stats_max_speed : R.string.stats_fastest_pace);
 
@@ -219,7 +220,7 @@ public class StatisticsRecordedFragment extends Fragment {
         viewBinding.statsMaxSpeedUnit.setText(parts.second);
     }
 
-    private void updatedSetMovingSpeed(TrackStatistics trackStatistics) {
+    private void updatedSetMovingSpeed(TrackStatistics trackStatistics, SpeedFormatter formatter) {
         viewBinding.statsMovingSpeedLabel.setText(
                 preferenceReportSpeed ? R.string.stats_average_moving_speed : R.string.stats_average_moving_pace);
 
@@ -230,7 +231,7 @@ public class StatisticsRecordedFragment extends Fragment {
 
     private void updatedSetAltitudeGainAndLoss(TrackStatistics trackStatistics) {
         Float altitudeGain = trackStatistics.getTotalAltitudeGain();
-        Float altitudeLoss_m = trackStatistics.getTotalAltitudeLoss();
+        Float altitudeLoss = trackStatistics.getTotalAltitudeLoss();
 
         Pair<String, String> parts;
 
@@ -238,11 +239,11 @@ public class StatisticsRecordedFragment extends Fragment {
         viewBinding.statsAltitudeGainValue.setText(parts.first);
         viewBinding.statsAltitudeGainUnit.setText(parts.second);
 
-        parts = StringUtils.getAltitudeParts(getContext(), altitudeLoss_m, unitSystem);
+        parts = StringUtils.getAltitudeParts(getContext(), altitudeLoss, unitSystem);
         viewBinding.statsAltitudeLossValue.setText(parts.first);
         viewBinding.statsAltitudeLossUnit.setText(parts.second);
 
-        boolean show = altitudeGain != null && altitudeLoss_m != null;
+        boolean show = altitudeGain != null && altitudeLoss != null;
         viewBinding.statsAltitudeGroup.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
@@ -260,13 +261,13 @@ public class StatisticsRecordedFragment extends Fragment {
         SpeedFormatter formatter = SpeedFormatter.Builder().setUnit(unitSystem)
                 .setReportSpeedOrPace(preferenceReportSpeed).build(getContext());
         // Set average speed/pace
-        updatedAverageSpeed(trackStatistics);
+        updatedAverageSpeed(trackStatistics, formatter);
 
         // Set max speed/pace
-        updatedMaxSpeed(trackStatistics);
+        updatedMaxSpeed(trackStatistics, formatter);
 
         // Set moving speed/pace
-        updatedSetMovingSpeed(trackStatistics);
+        updatedSetMovingSpeed(trackStatistics, formatter);
 
         // Set altitude gain and loss
         updatedSetAltitudeGainAndLoss(trackStatistics);
