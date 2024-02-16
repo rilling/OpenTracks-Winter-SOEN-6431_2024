@@ -366,8 +366,8 @@ public class TrackPoint {
         return sensorDistance;
     }
 
-    public TrackPoint setSensorDistance(Distance distance_m) {
-        this.sensorDistance = distance_m;
+    public TrackPoint setSensorDistance(Distance distanceM) {
+        this.sensorDistance = distanceM;
         return this;
     }
 
