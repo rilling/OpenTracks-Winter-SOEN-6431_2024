@@ -48,7 +48,7 @@ public final class Marker {
     private final Instant time;
     private Double latitude;
     private Double longitude;
-    @Deprecated //Not needed
+
     private Distance accuracy;
     private Altitude altitude;
     private Float bearing;
