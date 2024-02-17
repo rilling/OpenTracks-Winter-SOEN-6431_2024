@@ -80,7 +80,7 @@ public final class Marker {
         this.duration = Duration.ofMillis(0); //TODO Not cool!
     }
 
-    @Deprecated
+
     public Marker(String name, String description, String category, String icon, @NonNull Track.Id trackId, @NonNull TrackStatistics statistics, @NonNull TrackPoint trackPoint, String photoUrl) {
         this(trackId, trackPoint);
         this.name = name;
