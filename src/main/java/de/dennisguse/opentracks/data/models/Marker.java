@@ -48,7 +48,7 @@ public final class Marker {
     private final Instant time;
     private Double latitude;
     private Double longitude;
-    @Deprecated //Not needed
+
     private Distance accuracy;
     private Altitude altitude;
     private Float bearing;
@@ -80,7 +80,7 @@ public final class Marker {
         this.duration = Duration.ofMillis(0); //TODO Not cool!
     }
 
-    @Deprecated
+
     public Marker(String name, String description, String category, String icon, @NonNull Track.Id trackId, @NonNull TrackStatistics statistics, @NonNull TrackPoint trackPoint, String photoUrl) {
         this(trackId, trackPoint);
         this.name = name;
