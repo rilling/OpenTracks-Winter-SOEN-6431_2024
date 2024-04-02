@@ -125,7 +125,41 @@ public class TrackStatisticsUpdater {
             currentSegment.setAverageHeartRate(HeartRate.of(averageHeartRateBPM));
         }
 
-        updateDistanceAndSpeed(trackPoint);
+        {
+            // Update total distance
+            Distance movingDistance = null;
+            if (trackPoint.hasSensorDistance()) {
+                movingDistance = trackPoint.getSensorDistance();
+            } else if (lastTrackPoint != null
+                    && lastTrackPoint.hasLocation()
+                    && trackPoint.hasLocation()) {
+                // GPS-based distance/speed
+                movingDistance = trackPoint.distanceToPrevious(lastTrackPoint);
+            }
+            if (movingDistance != null) {
+                currentSegment.setIdle(false);
+                currentSegment.addTotalDistance(movingDistance);
+            }
+
+            if (!currentSegment.isIdle() && !trackPoint.isSegmentManualStart()) {
+                if (lastTrackPoint != null) {
+                    currentSegment.addMovingTime(trackPoint, lastTrackPoint);
+                }
+            }
+
+            if (trackPoint.getType() == TrackPoint.Type.IDLE) {
+                currentSegment.setIdle(true);
+            }
+
+            if (trackPoint.hasSpeed()) {
+                updateSpeed(trackPoint);
+            }
+
+            // Update current Slope= Change in Distance / Change in Altitude
+            if (movingDistance != null) {
+               updateSlopePercent(trackPoint, movingDistance);
+            }
+        }
 
         if (trackPoint.isSegmentManualEnd()) {
             reset(trackPoint);
@@ -133,30 +167,6 @@ public class TrackStatisticsUpdater {
         }
 
         lastTrackPoint = trackPoint;
-    }
-
-    // Extracted method for updating total distance and speed
-    private void updateDistanceAndSpeed(TrackPoint trackPoint) {
-        Distance movingDistance = null;
-        if (trackPoint.hasSensorDistance()) {
-            movingDistance = trackPoint.getSensorDistance();
-        } else if (lastTrackPoint != null && lastTrackPoint.hasLocation() && trackPoint.hasLocation()) {
-            // GPS-based distance/speed
-            movingDistance = trackPoint.distanceToPrevious(lastTrackPoint);
-        }
-        if (movingDistance != null) {
-            currentSegment.setIdle(false);
-            currentSegment.addTotalDistance(movingDistance);
-        }
-        if (!currentSegment.isIdle() && !trackPoint.isSegmentManualStart() && lastTrackPoint != null) {
-            currentSegment.addMovingTime(trackPoint, lastTrackPoint);
-        }
-        if (trackPoint.getType() == TrackPoint.Type.IDLE) {
-            currentSegment.setIdle(true);
-        }
-        if (trackPoint.hasSpeed()) {
-            updateSpeed(trackPoint);
-        }
     }
 
     private void reset(TrackPoint trackPoint) {
@@ -182,6 +192,33 @@ public class TrackStatisticsUpdater {
         if (currentSpeed.greaterThan(currentSegment.getMaxSpeed())) {
             currentSegment.setMaxSpeed(currentSpeed);
         }
+    }
+
+    /**
+     * Updates the slope percent assuming the user has moved
+     */
+    private void updateSlopePercent(@NonNull TrackPoint trackPoint, Distance distanceMoved) {
+        Float altituteChanged = null;
+        if (trackPoint.hasAltitudeGain()) {
+            altituteChanged = trackPoint.getAltitudeGain();
+        }
+
+        if (trackPoint.hasAltitudeLoss()) {
+            altituteChanged = trackPoint.getAltitudeLoss();
+        }
+
+        // absolute (GPS-based) altitude
+        if (altituteChanged == null && trackPoint.hasAltitude() && lastTrackPoint != null) {
+            altituteChanged = Math.abs((float)(lastTrackPoint.getAltitude().toM() - trackPoint.getAltitude().toM()));
+        }
+
+        if (altituteChanged == null) {
+            return;
+        }
+
+        // Slope= Change in Distance / Change in Altitude
+        Float slopePercent = (float) ( altituteChanged / distanceMoved.toM()) * 100;
+        currentSegment.setSlopePercent(slopePercent);
     }
 
     @NonNull
