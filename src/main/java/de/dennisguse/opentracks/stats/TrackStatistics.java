@@ -359,7 +359,6 @@ public class TrackStatistics {
             return;
         }
 
-
         // If user is near a chairlift
         if (isNearChairlift(latitude, longitude)) {
             // Set the arrival time if not already set
@@ -385,24 +384,42 @@ public class TrackStatistics {
 
     // Checks if chairlift activity is completed
     public boolean isEndOfRun(double elevation, Instant time) {
-        //TODO: Implement this method
+        if (lastElevation != null && (elevation - lastElevation) > ELEVATION_THRESHOLD) {
+            Duration timeDiff = Duration.between(activityStartTime, time);
+            double speed = (elevation - lastElevation) / timeDiff.getSeconds();
+
+            return speed >= SPEED_THRESHOLD;
+        }
+
         return false;
     }
 
     private boolean isNearChairlift(double chairliftLatitude, double chairliftLongitude)
     {
-        //TODO: Implement this method
         //current latitude and longitude
         double curr_user_latitude = userCurrLocation.getLatitude();
         double curr_user_longitude = userCurrLocation.getLongitude();
 
+        // Haversine formula for caluculating distance between two points on earth
+        double earthRadius = 6371; // Radius of earth in Kilometers
+        double d_Latitude = Math.toRadians(chairliftLatitude - curr_user_latitude);
+        double d_Longitude = Math.toRadians(chairliftLongitude - curr_user_longitude);
 
+        double a = Math.sin(d_Latitude / 2) * Math.sin(d_Latitude / 2) +
+                Math.cos(Math.toRadians(curr_user_latitude)) * Math.cos(Math.toRadians(chairliftLatitude)) *
+                        Math.sin(d_Longitude / 2) * Math.sin(d_Longitude / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-        return false;
+        double distance = earthRadius * c; // Distance in kilometers
+
+        return distance <= CHAIRLIFT_RADIUS;
     }
 
+    public Duration getTotalWaitTime() {
+        return totalWaitTime;
+    }
 
-        public boolean hasTotalAltitudeGain() {
+    public boolean hasTotalAltitudeGain() {
         return totalAltitudeGain_m != null;
     }
 
