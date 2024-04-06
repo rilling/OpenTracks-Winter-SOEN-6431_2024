@@ -154,11 +154,6 @@ public class TrackStatisticsUpdater {
             if (trackPoint.hasSpeed()) {
                 updateSpeed(trackPoint);
             }
-
-            // Update current Slope= Change in Distance / Change in Altitude
-            if (movingDistance != null) {
-               updateSlopePercent(trackPoint, movingDistance);
-            }
         }
 
         if (trackPoint.isSegmentManualEnd()) {
@@ -192,33 +187,6 @@ public class TrackStatisticsUpdater {
         if (currentSpeed.greaterThan(currentSegment.getMaxSpeed())) {
             currentSegment.setMaxSpeed(currentSpeed);
         }
-    }
-
-    /**
-     * Updates the slope percent assuming the user has moved
-     */
-    private void updateSlopePercent(@NonNull TrackPoint trackPoint, Distance distanceMoved) {
-        Float altituteChanged = null;
-        if (trackPoint.hasAltitudeGain()) {
-            altituteChanged = trackPoint.getAltitudeGain();
-        }
-
-        if (trackPoint.hasAltitudeLoss()) {
-            altituteChanged = trackPoint.getAltitudeLoss();
-        }
-
-        // absolute (GPS-based) altitude
-        if (altituteChanged == null && trackPoint.hasAltitude() && lastTrackPoint != null) {
-            altituteChanged = Math.abs((float)(lastTrackPoint.getAltitude().toM() - trackPoint.getAltitude().toM()));
-        }
-
-        if (altituteChanged == null) {
-            return;
-        }
-
-        // Slope= Change in Distance / Change in Altitude
-        Float slopePercent = (float) ( altituteChanged / distanceMoved.toM()) * 100;
-        currentSegment.setSlopePercent(slopePercent);
     }
 
     @NonNull
