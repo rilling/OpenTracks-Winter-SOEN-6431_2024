@@ -21,6 +21,7 @@ import de.dennisguse.opentracks.databinding.AggregatedStatsListItemBinding;
 import de.dennisguse.opentracks.settings.PreferencesUtils;
 import de.dennisguse.opentracks.settings.UnitSystem;
 import de.dennisguse.opentracks.ui.aggregatedStatistics.SeasonStats.SeasonStatActivity;
+import de.dennisguse.opentracks.ui.aggregatedStatistics.daySpecificStats.DaySpecificActivity;
 import de.dennisguse.opentracks.util.StringUtils;
 
 public class AggregatedStatisticsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -88,6 +89,16 @@ public class AggregatedStatisticsAdapter extends RecyclerView.Adapter<RecyclerVi
                 public void onClick(View v) {
                     Context context = viewBinding.getRoot().getContext();
                     Intent intent = new Intent(context, SeasonStatActivity.class);
+                    context.startActivity(intent);
+                }
+            });
+
+            viewBinding.calendarButton.setOnClickListener(new View.OnClickListener(){
+
+                @Override
+                public void onClick(View v) {
+                    Context context = viewBinding.getRoot().getContext();
+                    Intent intent = new Intent(context, DaySpecificActivity.class);
                     context.startActivity(intent);
                 }
             });
