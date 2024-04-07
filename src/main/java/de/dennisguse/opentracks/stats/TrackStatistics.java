@@ -100,7 +100,6 @@
          this.maxSpeed = Speed.of(maxSpeed_mps);
          this.totalAltitudeGain_m = totalAltitudeGain_m;
          this.totalAltitudeLoss_m = totalAltitudeLoss_m;
-         this.slopePercent_m = slopePercent_m;
      }
  
      /**
@@ -176,6 +175,7 @@
          setMaxSpeed(Speed.zero());
          setTotalAltitudeGain(null);
          setTotalAltitudeLoss(null);
+         setSlopePercent(null);
  
          isIdle = false;
      }
@@ -408,6 +408,7 @@
                  + "; Moving Time: " + getMovingTime() + "; Max Speed: " + getMaxSpeed()
                  + "; Min Altitude: " + getMinAltitude() + "; Max Altitude: " + getMaxAltitude()
                  + "; Altitude Gain: " + getTotalAltitudeGain()
-                 + "; Altitude Loss: " + getTotalAltitudeLoss() + "}";
+                 + "; Altitude Loss: " + getTotalAltitudeLoss()
+                 + "; Slope%: " + getSlopePercent() + "}";
      }
  }

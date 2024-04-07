@@ -199,26 +199,29 @@
       */
      private void updateSlopePercent(@NonNull TrackPoint trackPoint, Distance distanceMoved) {
          Float altituteChanged = null;
-         if (trackPoint.hasAltitudeGain()) {
-             altituteChanged = trackPoint.getAltitudeGain();
-         }
- 
-         if (trackPoint.hasAltitudeLoss()) {
-             altituteChanged = trackPoint.getAltitudeLoss();
-         }
  
          // absolute (GPS-based) altitude
          if (altituteChanged == null && trackPoint.hasAltitude() && lastTrackPoint != null) {
-             altituteChanged = Math.abs((float)(lastTrackPoint.getAltitude().toM() - trackPoint.getAltitude().toM()));
+             altituteChanged = (float)(trackPoint.getAltitude().toM() - lastTrackPoint.getAltitude().toM());
+         }
+ 
+         if (altituteChanged == null) {
+             if (trackPoint.hasAltitudeGain()) {
+                 altituteChanged = trackPoint.getAltitudeGain();
+             } else if (trackPoint.hasAltitudeLoss()) {
+                 altituteChanged = -trackPoint.getAltitudeLoss();
+             }
          }
  
          if (altituteChanged == null) {
              return;
          }
  
-         // Slope= Change in Distance / Change in Altitude
-         Float slopePercent = (float) ( altituteChanged / distanceMoved.toM()) * 100;
-         currentSegment.setSlopePercent(slopePercent);
+         // Slope = Change in Distance / Change in Altitude
+         Float slopePercentChangedBetweenPoints = (float) (( altituteChanged / distanceMoved.toM()) * 100);
+         Float prevAggregatedSlopePercent = currentSegment.hasSlope() ? currentSegment.getSlopePercent() : 0;
+         Float aggregatedSlopePercent = prevAggregatedSlopePercent + slopePercentChangedBetweenPoints;
+         currentSegment.setSlopePercent(aggregatedSlopePercent);
      }
  
      @NonNull
