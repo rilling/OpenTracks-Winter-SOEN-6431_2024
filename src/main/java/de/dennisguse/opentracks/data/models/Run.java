@@ -1,7 +1,5 @@
 package de.dennisguse.opentracks.data.models;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
