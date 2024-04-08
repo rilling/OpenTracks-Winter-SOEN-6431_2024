@@ -16,6 +16,8 @@
 
 package de.dennisguse.opentracks.stats;
 
+import android.location.Location;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -62,6 +64,17 @@ public class TrackStatistics {
     private HeartRate avgHeartRate = null;
 
     private boolean isIdle;
+
+    private static final double CHAIRLIFT_RADIUS = 0.01;
+    private static final double ELEVATION_THRESHOLD = 10; // The elevation threshold to detect the end of a run
+    private static final double SPEED_THRESHOLD = 0.1; // The speed threshold to confirm the end of a run
+
+    private Instant chairliftArrivalTime;
+    private Instant activityStartTime;
+    private Double lastElevation;
+    private Duration totalWaitTime = Duration.ZERO;
+    private Location userCurrLocation;
+
 
     public TrackStatistics() {
         reset();
@@ -333,6 +346,79 @@ public class TrackStatistics {
         }
     }
 
+    // Start chairlift activity
+    public void startChairliftActivity(Instant time, double elevation) {
+        activityStartTime = time;
+        lastElevation = elevation;
+    }
+
+    // Update the location of the chairlift
+    public void updateChairliftLocation(double latitude, double longitude, double elevation, Instant time) {
+        if (activityStartTime == null) {
+            lastElevation = elevation;
+            return;
+        }
+
+        // If user is near a chairlift
+        if (isNearChairlift(latitude, longitude)) {
+            // Set the arrival time if not already set
+            if (chairliftArrivalTime == null) {
+                chairliftArrivalTime = time;
+            }
+        } else {
+            // If user was on the chairlift and now away from it
+            if (chairliftArrivalTime != null) {
+                Duration waitTime = Duration.between(chairliftArrivalTime, time);
+                totalWaitTime = totalWaitTime.plus(waitTime);
+
+                chairliftArrivalTime = null;
+            }
+
+            if (isEndOfRun(elevation, time)) {
+                activityStartTime = null; // End the activity
+            }
+        }
+
+        lastElevation = elevation;
+    }
+
+    // Checks if chairlift activity is completed
+    public boolean isEndOfRun(double elevation, Instant time) {
+        if (lastElevation != null && (elevation - lastElevation) > ELEVATION_THRESHOLD) {
+            Duration timeDiff = Duration.between(activityStartTime, time);
+            double speed = (elevation - lastElevation) / timeDiff.getSeconds();
+
+            return speed >= SPEED_THRESHOLD;
+        }
+
+        return false;
+    }
+
+    private boolean isNearChairlift(double chairliftLatitude, double chairliftLongitude)
+    {
+        //current latitude and longitude
+        double curr_user_latitude = userCurrLocation.getLatitude();
+        double curr_user_longitude = userCurrLocation.getLongitude();
+
+        // Haversine formula for caluculating distance between two points on earth
+        double earthRadius = 6371; // Radius of earth in Kilometers
+        double d_Latitude = Math.toRadians(chairliftLatitude - curr_user_latitude);
+        double d_Longitude = Math.toRadians(chairliftLongitude - curr_user_longitude);
+
+        double a = Math.sin(d_Latitude / 2) * Math.sin(d_Latitude / 2) +
+                Math.cos(Math.toRadians(curr_user_latitude)) * Math.cos(Math.toRadians(chairliftLatitude)) *
+                        Math.sin(d_Longitude / 2) * Math.sin(d_Longitude / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        double distance = earthRadius * c; // Distance in kilometers
+
+        return distance <= CHAIRLIFT_RADIUS;
+    }
+
+    public Duration getTotalWaitTime() {
+        return totalWaitTime;
+    }
+
     public boolean hasTotalAltitudeGain() {
         return totalAltitudeGain_m != null;
     }
@@ -393,4 +479,7 @@ public class TrackStatistics {
                 + "; Altitude Gain: " + getTotalAltitudeGain()
                 + "; Altitude Loss: " + getTotalAltitudeLoss() + "}";
     }
+
+
 }
+

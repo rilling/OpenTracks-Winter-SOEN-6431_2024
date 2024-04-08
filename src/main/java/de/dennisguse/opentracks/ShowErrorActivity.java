@@ -18,7 +18,6 @@ public class ShowErrorActivity extends AbstractActivity {
     public static final String EXTRA_ERROR_TEXT = "error";
 
     private ActivityShowErrorBinding viewBinding;
-
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
