@@ -9,6 +9,7 @@ public class Run {
     private long startTime;
     private long endTime;
     private double maxSpeed;
+    private double averageSpeed;
 
     private double distance; // Consider adding other relevant properties (e.g., elevation gain/loss)
     private final List<TrackPoint> trackPoints;
@@ -60,6 +61,13 @@ public class Run {
         this.trackPoints.add(trackPoint);
     }
 
+    public double getAverageSpeed() {
+        return averageSpeed;
+    }
 
+    public void setAverageSpeed(double speed) {
+        this.averageSpeed = speed;
+
+    }
 
 }

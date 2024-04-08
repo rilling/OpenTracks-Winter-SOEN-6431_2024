@@ -74,6 +74,24 @@ public class RunAnalyzer {
         }
     }
 
+    public static void calculateAvgSpeedStatistics(List<Run> runs) {
+        double totalSpeed = 0;
+         double averageSpeed;
+        ArrayList<Speed> speedList = new ArrayList<>();
+        for (Run run : runs) {
+            List<TrackPoint> trackPoints = run.getTrackPoints();
+            for (TrackPoint tp : trackPoints) {
+                Speed speed = tp.getSpeed();
+                speedList.add(speed);
+                totalSpeed += speed.toMPS(); // convert speed to m/s
+            }
+
+            // Set ski run average speed
+            averageSpeed = totalSpeed / speedList.size();
+        }
+
+    }
+
 
 }
 
