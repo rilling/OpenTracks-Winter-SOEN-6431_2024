@@ -10,7 +10,7 @@ public class Chairlift {
     // Fields
     private String name;
     private int number;
-    private double averageSpeed;
+    private double chairliftSpeed;
     private String liftType;
     private int id;
 
@@ -19,10 +19,10 @@ public class Chairlift {
     private static final Map<Integer, Chairlift> validChairlifts = new HashMap<>();
 
     // Constructors
-    public Chairlift(String name, int number, double averageSpeed, String liftType) {
+    public Chairlift(String name, int number, double chairliftSpeed, String liftType) {
         this.name = name;
         this.number = number;
-        this.averageSpeed = averageSpeed;
+        this.chairliftSpeed = chairliftSpeed;
         this.liftType = liftType;
         this.id = nextId++;
     }
@@ -44,12 +44,12 @@ public class Chairlift {
         this.number = number;
     }
 
-    public double getAverageSpeed() {
-        return averageSpeed;
+    public double getchairliftSpeed() {
+        return chairliftSpeed;
     }
 
-    public void setAverageSpeed(double averageSpeed) {
-        this.averageSpeed = averageSpeed;
+    public void setchairliftSpeed(double chairliftSpeed) {
+        this.chairliftSpeed = chairliftSpeed;
     }
 
     public String getLiftType() {
@@ -86,21 +86,20 @@ public class Chairlift {
             return false; // Likely not on chairlift
         }
 
-        // Calculate total distance and time
-        double totalDistance = calculateTotalDistance(trackPoints);
+        // Calculate total time
         double totalTime = calculateTotalTime(trackPoints);
 
         // Calculate average speed
-        double averageSpeed = totalDistance / totalTime;
+        double chairliftSpeed = calculateChairliftSpeed(trackPoints);
 
         // Check average speed and total time
-        if ((averageSpeed < speedThreshold || averageSpeed > 6) ||
+        if ((chairliftSpeed < speedThreshold || chairliftSpeed > 6) ||
                 (totalTime > timeThreshold && totalTime < 7.7)) {
             return false;
         }
 
         // Add chairlift to valid chairlifts and mark track points as chairlift segment
-        Chairlift validChairlift = new Chairlift(name, number, averageSpeed, liftType);
+        Chairlift validChairlift = new Chairlift(name, number, chairliftSpeed, liftType);
         validChairlifts.put(validChairlift.getId(), validChairlift);
         trackPoints.forEach(trackPoint -> trackPoint.setChairliftSegment(true));
 
@@ -128,6 +127,17 @@ public class Chairlift {
         }
         return totalTime.toMinutes();
     }
+
+    private double calculateChairliftSpeed(List<TrackPoint> trackPoints){
+        // Calculate total distance and time
+        double totalDistance = calculateTotalDistance(trackPoints);
+        double totalTime = calculateTotalTime(trackPoints);
+
+        // Calculate average speed
+        return totalDistance / totalTime;
+    }
+
+
 
     public static List<Chairlift> getValidChairlifts() {
         return new ArrayList<>(validChairlifts.values());
