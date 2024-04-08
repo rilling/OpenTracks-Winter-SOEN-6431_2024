@@ -66,6 +66,7 @@
  
      // Slope % between this point and the previous point
      private Float slopePercent_m;
+     private Float maximumSpeedPerRun;
      public TrackStatistics() {
          reset();
      }
@@ -88,6 +89,7 @@
          avgHeartRate = other.avgHeartRate;
          isIdle = other.isIdle;
          slopePercent_m = other.slopePercent_m;
+         maximumSpeedPerRun = other.maximumSpeedPerRun;
      }
  
      @VisibleForTesting
@@ -383,6 +385,13 @@
      public boolean hasSlope() {
          return  slopePercent_m != null;
      }
+     public float getMaximumSpeedPerRun() {
+         return maximumSpeedPerRun;
+     }
+
+     public void setMaximumSpeedPerRun(float maximumSpeedPerRun) {
+         this.maximumSpeedPerRun = maximumSpeedPerRun;
+     }
  
      @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
      public void addTotalAltitudeLoss(float loss_m) {
@@ -406,6 +415,7 @@
          return "TrackStatistics { Start Time: " + getStartTime() + "; Stop Time: " + getStopTime()
                  + "; Total Distance: " + getTotalDistance() + "; Total Time: " + getTotalTime()
                  + "; Moving Time: " + getMovingTime() + "; Max Speed: " + getMaxSpeed()
+                 + "; Maximum Speed Per Run: " + getMaximumSpeedPerRun()
                  + "; Min Altitude: " + getMinAltitude() + "; Max Altitude: " + getMaxAltitude()
                  + "; Altitude Gain: " + getTotalAltitudeGain()
                  + "; Altitude Loss: " + getTotalAltitudeLoss()

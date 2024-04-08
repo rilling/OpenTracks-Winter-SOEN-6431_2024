@@ -25,6 +25,7 @@
  import de.dennisguse.opentracks.data.models.HeartRate;
  import de.dennisguse.opentracks.data.models.Speed;
  import de.dennisguse.opentracks.data.models.TrackPoint;
+ import de.dennisguse.opentracks.data.models.Run;
  
  /**
   * Updater for {@link TrackStatistics}.
@@ -40,6 +41,7 @@
      private static final String TAG = TrackStatisticsUpdater.class.getSimpleName();
  
      private final TrackStatistics trackStatistics;
+     private SessionManager sessionManager; // Added field for SessionManager
  
      private float averageHeartRateBPM;
      private Duration totalHeartRateDuration = Duration.ZERO;
@@ -61,14 +63,14 @@
      public TrackStatisticsUpdater(TrackStatistics trackStatistics) {
          this.trackStatistics = trackStatistics;
          this.currentSegment = new TrackStatistics();
- 
+
          resetAverageHeartRate();
      }
  
      public TrackStatisticsUpdater(TrackStatisticsUpdater toCopy) {
          this.currentSegment = new TrackStatistics(toCopy.currentSegment);
          this.trackStatistics = new TrackStatistics(toCopy.trackStatistics);
- 
+         this.sessionManager = toCopy.sessionManager;
          this.lastTrackPoint = toCopy.lastTrackPoint;
          resetAverageHeartRate();
      }
@@ -82,6 +84,13 @@
  
      public void addTrackPoints(List<TrackPoint> trackPoints) {
          trackPoints.stream().forEachOrdered(this::addTrackPoint);
+         List<Run> runs = RunAnalyzer.identifyRuns(sessionManager.getSessionId(), trackPoints); // Identify runs
+         RunAnalyzer.calculateMaxSpeedPerRun(runs); // Calculate max speed for each run
+
+         // Add runs to the session
+         for (Run run : runs) {
+             currentSegment.setMaximumSpeedPerRun((float) run.getMaxSpeed());
+         }
      }
  
      /**
