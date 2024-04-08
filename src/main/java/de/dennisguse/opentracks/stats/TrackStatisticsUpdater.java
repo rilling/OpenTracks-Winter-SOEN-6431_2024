@@ -156,6 +156,11 @@ public class TrackStatisticsUpdater {
             }
         }
 
+        {
+            // Update Chairlift related data
+            currentSegment.updateChairliftTime(trackPoint);
+        }
+
         if (trackPoint.isSegmentManualEnd()) {
             reset(trackPoint);
             return;
