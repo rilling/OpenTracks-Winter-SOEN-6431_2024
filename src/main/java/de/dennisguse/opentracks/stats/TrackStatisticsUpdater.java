@@ -86,12 +86,10 @@
          trackPoints.stream().forEachOrdered(this::addTrackPoint);
          List<Run> runs = RunAnalyzer.identifyRuns(sessionManager.getSessionId(), trackPoints); // Identify runs
          RunAnalyzer.calculateMaxSpeedPerRun(runs); // Calculate max speed for each run
-         RunAnalyzer.calculateAvgSpeedStatistics(runs);
+
          // Add runs to the session
          for (Run run : runs) {
              currentSegment.setMaximumSpeedPerRun((float) run.getMaxSpeed());
-
-             currentSegment.setAverageSpeedPerRun(run.getAverageSpeed());
          }
      }
 

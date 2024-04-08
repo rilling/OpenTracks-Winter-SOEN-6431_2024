@@ -56,7 +56,7 @@
      private Duration movingTime;
      // The maximum speed (meters/second) that we believe is valid.
      private Speed maxSpeed;
-     private double averageSpeed;
+
      private Float totalAltitudeGain_m = null;
      private Float totalAltitudeLoss_m = null;
 
@@ -394,14 +394,7 @@
          this.maximumSpeedPerRun = maximumSpeedPerRun;
      }
 
-     public double getAverageSpeedPerRun() {
-         return averageSpeed;
-     }
 
-     public void setAverageSpeedPerRun(double speed) {
-         this.averageSpeed = speed;
-
-     }
 
      @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
      public void addTotalAltitudeLoss(float loss_m) {
@@ -425,7 +418,6 @@
          return "TrackStatistics { Start Time: " + getStartTime() + "; Stop Time: " + getStopTime()
                  + "; Total Distance: " + getTotalDistance() + "; Total Time: " + getTotalTime()
                  + "; Moving Time: " + getMovingTime() + "; Max Speed: " + getMaxSpeed()
-                 + "; Average Speed Per Run: " + getAverageSpeedPerRun()
                  + "; Maximum Speed Per Run: " + getMaximumSpeedPerRun()
                  + "; Min Altitude: " + getMinAltitude() + "; Max Altitude: " + getMaxAltitude()
                  + "; Altitude Gain: " + getTotalAltitudeGain()
