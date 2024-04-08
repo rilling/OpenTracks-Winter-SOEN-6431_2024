@@ -1,6 +1,7 @@
 package de.dennisguse.opentracks.ui.aggregatedStatistics.daySpecificStats;
 
 import android.database.Cursor;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -13,19 +14,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.List;
-
 import de.dennisguse.opentracks.R;
-import de.dennisguse.opentracks.data.models.Distance;
 import de.dennisguse.opentracks.data.models.Track;
-import de.dennisguse.opentracks.data.models.TrackSegment;
 import de.dennisguse.opentracks.databinding.DaySpecificActivityItemBinding;
+import de.dennisguse.opentracks.ui.TrackListAdapter;
 import de.dennisguse.opentracks.ui.util.ActivityUtils;
 
-public class DaySpecificAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ActionMode.Callback {
+public class DaySpecificAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private static final String TAG = DaySpecificAdapter.class.getSimpleName();
-    DaySpecificActivityItemBinding viewBinding;
     private final AppCompatActivity context;
     private final RecyclerView recyclerView;
 
@@ -33,55 +29,53 @@ public class DaySpecificAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private Cursor cursor;
 
+    private boolean selectionMode = false;
     private ActivityUtils.ContextualActionModeCallback actionModeCallback;
-    private List<TrackSegment> trackSegments;
 
     public DaySpecificAdapter(AppCompatActivity context, RecyclerView recyclerView) {
         this.context = context;
         this.recyclerView = recyclerView;
+
+        Log.d("LOL", "In Adapter");
     }
 
-    @Override
-    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-        return false;
-    }
-
-    @Override
-    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-        return false;
-    }
-
-    @Override
-    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-        return false;
-    }
-
-    @Override
-    public void onDestroyActionMode(ActionMode mode) {
-
+    public void setActionModeCallback(ActivityUtils.ContextualActionModeCallback actionModeCallback) {
+        this.actionModeCallback = actionModeCallback;
     }
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.day_specific_activity_item, parent, false);
+
+        Log.d("LOL", "In onCreateViewHolder");
+
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        DaySpecificAdapter.ViewHolder viewHolder = (DaySpecificAdapter.ViewHolder) holder;
-        TrackSegment segment = trackSegments.get(position);
-        viewHolder.bind(segment);
+        TrackListAdapter.ViewHolder viewHolder = (TrackListAdapter.ViewHolder) holder;
+
+        cursor.moveToPosition(position);
+        viewHolder.bind(cursor);
+
+        Log.d("LOL", "In onBindViewHolder");
     }
 
-    public void swapData(List<TrackSegment> segments) {
-        this.trackSegments = segments;
-        this.notifyDataSetChanged();
-    }
     @Override
     public int getItemCount() {
-        return trackSegments.size();
+        if(cursor == null){
+            return 0;
+        }
+        Log.d("LOL", "Items Count: " + cursor.getCount());
+        Log.d("LOL", "Item-0 : " + cursor.getString(0));
+        return cursor.getCount();
+    }
+
+    public void swapData(Cursor cursor) {
+        this.cursor = cursor;
+        this.notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
@@ -94,6 +88,8 @@ public class DaySpecificAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
+            Log.d("LOL", "In ViewHolder");
+
             viewBinding = DaySpecificActivityItemBinding.bind(itemView);
             view = itemView;
 
@@ -101,15 +97,12 @@ public class DaySpecificAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             view.setOnLongClickListener(this);
         }
 
-        public void bind(TrackSegment segment) {
-            Distance distance = segment.getDistanceBetweenFirstAndLast();
-            Long time = segment.getTotalTime();
-            double speed = segment.getSpeed(distance, time);
+        public void bind(Cursor cursor){
             viewBinding.daySpecificActivity.setText("Run");
             viewBinding.daySpecificActivityDisplacement.setText("0 m");
             viewBinding.daySpecificActivityDistance.setText("0.14 km");
-            viewBinding.daySpecificActivitySpeed.setText(speed + " km/h");
-            viewBinding.daySpecificActivityTime.setText("" + segment.getTotalTime());
+            viewBinding.daySpecificActivitySpeed.setText("36.3 km/h");
+            viewBinding.daySpecificActivityTime.setText("0.50");
         }
 
         public void setSelected(boolean isSelected) {
