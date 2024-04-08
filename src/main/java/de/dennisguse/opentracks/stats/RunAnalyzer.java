@@ -7,6 +7,7 @@ import de.dennisguse.opentracks.data.models.TrackPoint;
 import de.dennisguse.opentracks.data.models.Run;
 
 public class RunAnalyzer {
+    private RunAnalyzer() {}
 
     private static final double ELEVATION_THRESHOLD = 5; // Meters
     private static final double SPEED_THRESHOLD = 2;   // Meters per second
