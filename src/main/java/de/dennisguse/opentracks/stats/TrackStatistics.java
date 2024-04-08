@@ -505,6 +505,47 @@ public class TrackStatistics {
         return R * c; // Distance in meters
     }
 
+    public static double calculateAverageSpeedFromGpx(String filePath) throws Exception {
+        File gpxFile = new File(filePath);
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+        Document doc = dBuilder.parse(gpxFile);
+
+        doc.getDocumentElement().normalize();
+        NodeList trkptList = doc.getElementsByTagName("trkpt");
+
+        double totalDistance = 0.0;
+        long totalTime = 0;
+        double lat1, lon1, lat2 = 0, lon2 = 0;
+        long time1, time2 = 0;
+
+        for (int i = 0; i < trkptList.getLength() - 1; i++) {
+            Element pt1 = (Element) trkptList.item(i);
+            Element pt2 = (Element) trkptList.item(i + 1);
+
+            lat1 = Double.parseDouble(pt1.getAttribute("lat"));
+            lon1 = Double.parseDouble(pt1.getAttribute("lon"));
+            lat2 = Double.parseDouble(pt2.getAttribute("lat"));
+            lon2 = Double.parseDouble(pt2.getAttribute("lon"));
+
+            String timeStr1 = ((Element) pt1.getElementsByTagName("time").item(0)).getTextContent();
+            String timeStr2 = ((Element) pt2.getElementsByTagName("time").item(0)).getTextContent();
+
+            Instant instant1 = Instant.parse(timeStr1);
+            Instant instant2 = Instant.parse(timeStr2);
+
+            time1 = instant1.getEpochSecond();
+            time2 = instant2.getEpochSecond();
+
+            totalDistance += calculateDistance(lat1, lon1, lat2, lon2);
+            totalTime += (time2 - time1);
+        }
+
+        // Ensure division by time is not zero
+        if (totalTime == 0) return 0.0;
+        return totalDistance / totalTime; // Average speed in meters per second
+    }
+
 
 }
 
