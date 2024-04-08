@@ -106,6 +106,10 @@ public class TrackStatistics {
         totalAltitudeLoss_m = other.totalAltitudeLoss_m;
         avgHeartRate = other.avgHeartRate;
         isIdle = other.isIdle;
+        chairliftDuration = other.chairliftDuration;
+        inChairlift = other.inChairlift;
+        chairliftStartPoint = other.chairliftStartPoint;
+
     }
 
     @VisibleForTesting
@@ -177,6 +181,23 @@ public class TrackStatistics {
                 totalAltitudeLoss_m += other.totalAltitudeLoss_m;
             }
         }
+        if (chairliftDuration.isZero()) {
+            chairliftDuration = other.chairliftDuration;
+        } else {
+            chairliftDuration = chairliftDuration.plus(other.chairliftDuration);
+        }
+        if (chairliftStartPoint == null) {
+            if(other.chairliftStartPoint != null) {
+                chairliftStartPoint = other.chairliftStartPoint;
+            }
+        } else {
+            if (other.chairliftStartPoint != null) {
+                if (chairliftStartPoint.getTime().isAfter(other.chairliftStartPoint.getTime())) {
+                    chairliftStartPoint = other.chairliftStartPoint;
+                }
+            }
+        }
+
     }
 
     public boolean isInitialized() {
@@ -474,14 +495,17 @@ public class TrackStatistics {
     }
 
     public void updateChairliftTime(TrackPoint trackPoint){
-
-        Speed speed = trackPoint.getSpeed();
+        // get the speed if available else take zero
+        Speed speed = trackPoint.hasSpeed() ? trackPoint.getSpeed() : Speed.zero();
         // get the altitude gain if available else take zero
         float altitudeGain = trackPoint.hasAltitudeGain() ? trackPoint.getAltitudeGain() : 0.0f;
         // Get the altitude loss if available else take zero
         float altitudeLoss = trackPoint.hasAltitudeLoss() ? trackPoint.getAltitudeLoss() : 0.0f;
 
-        if (!inChairlift && MAX_SPEED_THRESHOLD.greaterOrEqualThan(speed) && altitudeGain >= ALTITUDE_GAIN_THRESHOLD) {
+        if (!inChairlift && !speed.isInvalid() &&
+                MAX_SPEED_THRESHOLD.greaterOrEqualThan(speed)
+                &&
+                altitudeGain >= ALTITUDE_GAIN_THRESHOLD) {
             // Entering chairlift zone
             inChairlift = true;
             chairliftStartPoint = trackPoint;
