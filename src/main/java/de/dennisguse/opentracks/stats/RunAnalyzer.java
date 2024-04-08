@@ -3,12 +3,15 @@ package de.dennisguse.opentracks.stats;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.dennisguse.opentracks.data.models.Speed;
 import de.dennisguse.opentracks.data.models.TrackPoint;
 import de.dennisguse.opentracks.data.models.Run;
 
 public class RunAnalyzer {
-    private RunAnalyzer() {}
+    private RunAnalyzer() {
+    }
 
+    private static double averageSpeed;
     private static final double ELEVATION_THRESHOLD = 5; // Meters
     private static final double SPEED_THRESHOLD = 2;   // Meters per second
     private static final long TIME_THRESHOLD = 10;    // Seconds
@@ -71,6 +74,22 @@ public class RunAnalyzer {
         }
     }
 
-}
+    public static void calculateAvgSpeedStatistics(List<Run> runs) {
+        double totalSpeed = 0;
 
+        ArrayList<Speed> speedList = new ArrayList<>();
+        for (Run run : runs) {
+            List<TrackPoint> trackPoints = run.getTrackPoints();
+            for (TrackPoint tp : trackPoints) {
+                Speed speed = tp.getSpeed();
+                speedList.add(speed);
+                totalSpeed += speed.toMPS(); // convert speed to m/s
+            }
+
+            // Set ski run average speed
+           averageSpeed = totalSpeed / speedList.size();
+        }
+
+    }
+}
 
