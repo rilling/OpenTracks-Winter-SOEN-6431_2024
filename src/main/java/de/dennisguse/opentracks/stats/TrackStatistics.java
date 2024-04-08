@@ -22,8 +22,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
+import java.io.File;
 import java.time.Duration;
 import java.time.Instant;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import de.dennisguse.opentracks.data.models.Altitude;
 import de.dennisguse.opentracks.data.models.Distance;
@@ -478,6 +486,23 @@ public class TrackStatistics {
                 + "; Min Altitude: " + getMinAltitude() + "; Max Altitude: " + getMaxAltitude()
                 + "; Altitude Gain: " + getTotalAltitudeGain()
                 + "; Altitude Loss: " + getTotalAltitudeLoss() + "}";
+    }
+
+
+    private static double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+        // Haversine formula for calculating distance between two points
+        double R = 6371e3; // meters
+        double phi1 = Math.toRadians(lat1);
+        double phi2 = Math.toRadians(lat2);
+        double deltaPhi = Math.toRadians(lat2 - lat1);
+        double deltaLambda = Math.toRadians(lon2 - lon1);
+
+        double a = Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
+                Math.cos(phi1) * Math.cos(phi2) *
+                        Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        return R * c; // Distance in meters
     }
 
 
