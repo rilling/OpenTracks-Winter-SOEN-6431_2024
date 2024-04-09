@@ -68,6 +68,10 @@ public class TrackStatistics {
     private Speed maxSpeed;
     private Float totalAltitudeGain_m = null;
     private Float totalAltitudeLoss_m = null;
+    // Time spent in chairlift
+    private Duration chairliftDuration = Duration.ZERO;
+    // Flag to indicate chairlift status
+    private boolean inChairlift = false;
     // The average heart rate seen on this track
     private HeartRate avgHeartRate = null;
 
@@ -83,6 +87,11 @@ public class TrackStatistics {
     private Duration totalWaitTime = Duration.ZERO;
     private Location userCurrLocation;
 
+    private final Speed MAX_SPEED_THRESHOLD = Speed.of(2.0); // Threshold for maximum speed to detect chairlift activity
+    private final float ALTITUDE_GAIN_THRESHOLD = 10.0f; // Threshold for altitude gain to detect chairlift activity
+    private final float ALTITUDE_LOSS_THRESHOLD = 10.0f; // Threshold for altitude loss to detect chairlift activity
+
+    private TrackPoint chairliftStartPoint = null;
 
     public TrackStatistics() {
         reset();
@@ -105,6 +114,10 @@ public class TrackStatistics {
         totalAltitudeLoss_m = other.totalAltitudeLoss_m;
         avgHeartRate = other.avgHeartRate;
         isIdle = other.isIdle;
+        chairliftDuration = other.chairliftDuration;
+        inChairlift = other.inChairlift;
+        chairliftStartPoint = other.chairliftStartPoint;
+
     }
 
     @VisibleForTesting
@@ -176,6 +189,23 @@ public class TrackStatistics {
                 totalAltitudeLoss_m += other.totalAltitudeLoss_m;
             }
         }
+        if (chairliftDuration.isZero()) {
+            chairliftDuration = other.chairliftDuration;
+        } else {
+            chairliftDuration = chairliftDuration.plus(other.chairliftDuration);
+        }
+        if (chairliftStartPoint == null) {
+            if(other.chairliftStartPoint != null) {
+                chairliftStartPoint = other.chairliftStartPoint;
+            }
+        } else {
+            if (other.chairliftStartPoint != null) {
+                if (chairliftStartPoint.getTime().isAfter(other.chairliftStartPoint.getTime())) {
+                    chairliftStartPoint = other.chairliftStartPoint;
+                }
+            }
+        }
+
     }
 
     public boolean isInitialized() {
@@ -185,6 +215,9 @@ public class TrackStatistics {
     public void reset() {
         startTime = null;
         stopTime = null;
+        chairliftStartPoint = null;
+        chairliftDuration = Duration.ZERO;
+        inChairlift = false;
 
         setTotalDistance(Distance.of(0));
         setTotalTime(Duration.ofSeconds(0));
@@ -469,6 +502,37 @@ public class TrackStatistics {
         totalAltitudeLoss_m += loss_m;
     }
 
+    public void updateChairliftTime(TrackPoint trackPoint){
+        // get the speed if available else take zero
+        Speed speed = trackPoint.hasSpeed() ? trackPoint.getSpeed() : Speed.zero();
+        // get the altitude gain if available else take zero
+        float altitudeGain = trackPoint.hasAltitudeGain() ? trackPoint.getAltitudeGain() : 0.0f;
+        // Get the altitude loss if available else take zero
+        float altitudeLoss = trackPoint.hasAltitudeLoss() ? trackPoint.getAltitudeLoss() : 0.0f;
+
+        if (!inChairlift && !speed.isInvalid() &&
+                MAX_SPEED_THRESHOLD.greaterOrEqualThan(speed)
+                &&
+                altitudeGain >= ALTITUDE_GAIN_THRESHOLD) {
+            // Entering chairlift zone
+            inChairlift = true;
+            chairliftStartPoint = trackPoint;
+        } else if (inChairlift && (MAX_SPEED_THRESHOLD.lessThan(speed) || altitudeLoss > ALTITUDE_LOSS_THRESHOLD)) {
+            // Leaving chairlift zone
+            inChairlift = false;
+        }
+        if(inChairlift){
+            chairliftDuration = chairliftDuration.plus(Duration.between(chairliftStartPoint.getTime(), trackPoint.getTime()));
+        }
+    }
+    public Duration getChairliftTime(){
+        return chairliftDuration;
+    }
+
+    public Duration getTotalChairliftTime(){
+        return chairliftDuration.plus(totalWaitTime);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -485,7 +549,11 @@ public class TrackStatistics {
                 + "; Moving Time: " + getMovingTime() + "; Max Speed: " + getMaxSpeed()
                 + "; Min Altitude: " + getMinAltitude() + "; Max Altitude: " + getMaxAltitude()
                 + "; Altitude Gain: " + getTotalAltitudeGain()
-                + "; Altitude Loss: " + getTotalAltitudeLoss() + "}";
+                + "; Altitude Loss: " + getTotalAltitudeLoss()
+                + "; Time in Chairlift: " + getChairliftTime()
+                + "; Waiting Time at Chairlift: " + getTotalWaitTime()
+                + "; Total time at Chairlift (including waiting time): " + getTotalChairliftTime()
+                + "}";
     }
 
 
