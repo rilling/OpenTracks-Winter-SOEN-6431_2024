@@ -24,6 +24,7 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.net.Uri;
 import android.util.Log;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -78,16 +79,18 @@ public class PreferencesUtils {
     public static void initPreferences(final Context context, final Resources resources) {
         PreferencesUtils.resources = resources;
         PreferencesUtils.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-
+        setDefaultActivityLocalized(context.getString(R.string.activity_type_skiing));
         PreferencesOpenHelper.newInstance(PREFERENCES_VERSION).check();
     }
 
-    public static void registerOnSharedPreferenceChangeListener(SharedPreferences.OnSharedPreferenceChangeListener changeListener) {
+    public static void registerOnSharedPreferenceChangeListener(
+            SharedPreferences.OnSharedPreferenceChangeListener changeListener) {
         sharedPreferences.registerOnSharedPreferenceChangeListener(changeListener);
         changeListener.onSharedPreferenceChanged(sharedPreferences, null);
     }
 
-    public static void unregisterOnSharedPreferenceChangeListener(SharedPreferences.OnSharedPreferenceChangeListener changeListener) {
+    public static void unregisterOnSharedPreferenceChangeListener(
+            SharedPreferences.OnSharedPreferenceChangeListener changeListener) {
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(changeListener);
     }
 
@@ -97,6 +100,14 @@ public class PreferencesUtils {
 
     public static void setDefaultActivityLocalized(String newDefaultActivity) {
         setString(R.string.default_activity_key, newDefaultActivity);
+    }
+
+    public static String getSkiSeasonStartDate() {
+        return getString(R.string.ski_season_start_key, "09-01");
+    }
+
+    public static void setSkiSeasonStartDate(String newStartDate) {
+        setString(R.string.ski_season_start_key, newStartDate);
     }
 
     /**
@@ -209,6 +220,18 @@ public class PreferencesUtils {
         setBoolean(R.string.show_introduction_screen_key, introduction);
     }
 
+    public static boolean shouldDiscardRecord(int recordDuration) {
+        boolean autoDiscardEnabled = getBoolean(R.string.auto_discard_key, false);
+        int selectedLength = Integer.parseInt(getString(R.string.record_length_default, "0"));
+        int customLength = Integer.parseInt(getString(R.string.custom_record_length_key, "5"));
+        Log.d("DefaultsSettingsFragment", "Auto discard enabled: " + autoDiscardEnabled);
+        Log.d("DefaultsSettingsFragment", "Selected record length: " + selectedLength);
+        Log.d("DefaultsSettingsFragment", "Custom record length: " + customLength);
+        Log.d("DefaultsSettingsFragment", "Record duration: " + recordDuration);
+
+        return autoDiscardEnabled && (recordDuration < selectedLength|| recordDuration < customLength);
+    }
+
     public static UnitSystem getUnitSystem() {
         final String STATS_UNIT_DEFAULT = resources.getString(R.string.stats_units_default);
 
@@ -260,6 +283,10 @@ public class PreferencesUtils {
                 .orElse(SensorType.REMOTE);
     }
 
+    public static String getNickName(){
+        return getString(R.string.settings_profile_nickname_key, null);
+    } 
+    
     public static String getBarometerSensorAddress() {
         return getString(R.string.settings_sensor_bluetooth_pressure_key, getBluetoothSensorAddressNone());
     }
@@ -301,7 +328,8 @@ public class PreferencesUtils {
     }
 
     public static boolean shouldShowStatsOnLockscreen() {
-        final boolean STATS_SHOW_ON_LOCKSCREEN_DEFAULT = resources.getBoolean(R.bool.stats_show_on_lockscreen_while_recording_default);
+        final boolean STATS_SHOW_ON_LOCKSCREEN_DEFAULT = resources
+                .getBoolean(R.bool.stats_show_on_lockscreen_while_recording_default);
         return getBoolean(R.string.stats_show_on_lockscreen_while_recording_key, STATS_SHOW_ON_LOCKSCREEN_DEFAULT);
     }
 
@@ -439,6 +467,84 @@ public class PreferencesUtils {
     public static void setVoiceAnnounceAverageHeartRate(boolean value) {
         setBoolean(R.string.voice_announce_average_heart_rate_key, value);
     }
+
+
+    public static boolean shouldVoiceAnnounceMaxSpeedRun() {
+        return getBoolean(R.string.voice_announce_max_speed_run_key, true);
+    }
+
+
+    @VisibleForTesting
+    public static void setVoiceAnnounceMaxSpeedRun(boolean value) {
+        setBoolean(R.string.voice_announce_max_speed_run_key, value);
+    }
+
+    public static boolean shouldVoiceAnnounceRunAverageSpeed() {
+        return getBoolean(R.string.voice_announce_run_average_speed_key, true);
+    }
+
+    @VisibleForTesting
+    public static void setVoiceAnnounceRunAverageSpeed(boolean value) {
+        setBoolean(R.string.voice_announce_run_average_speed_key, value);
+    }
+
+
+    public static boolean shouldVoiceAnnounceMaxSlope() {
+        return getBoolean(R.string.voice_announce_max_slope_key, true);
+    }
+    
+    @VisibleForTesting
+    public static void setVoiceAnnounceMaxSlope(boolean value) {
+        setBoolean(R.string.voice_announce_max_slope_key, value);
+    }
+
+    // recoding related setting helper methods
+    public static boolean shouldVoiceAnnounceMaxSpeedRecording() {
+        return getBoolean(R.string.voice_announce_max_speed_recording_key, true);
+    }
+
+    @VisibleForTesting
+    public static void setVoiceAnnounceMaxSpeedRecording(boolean value) {
+        setBoolean(R.string.voice_announce_max_speed_recording_key, value);
+    }
+	
+	// recoding related setting helper methods
+    public static boolean shouldVoiceAnnounceTimeSkiedRecording() {
+        return getBoolean(R.string.voice_announce_time_skied_recording_key, true);
+    }
+	
+	@VisibleForTesting
+    public static void setVoiceAnnounceTimeSkiedRecording(boolean value) {
+        setBoolean(R.string.voice_announce_time_skied_recording_key, value);
+    }
+
+    //recording related data for average slope's helper methods for each recording
+    public static boolean shouldVoiceAnnounceAveragesloperecording() {
+        return getBoolean(R.string.voice_announce_average_slope_recording_key, true);
+    }
+    @VisibleForTesting
+    public static void setVoiceAnnounceAveragesloperecording(boolean value) {
+        setBoolean(R.string.voice_announce_average_slope_recording_key, value);
+
+    }
+    //recording related data for average slope's helper methods for each run
+    public static boolean shouldVoiceAnnounceAverageslopeRun() {
+        return getBoolean(R.string.voice_announce_average_slope_run_key, true);
+    }
+    @VisibleForTesting
+    public static void setVoiceAnnounceAverageslopeRun(boolean value) {
+        setBoolean(R.string.voice_announce_average_slope_run_key, value);
+
+    }
+
+    public static boolean shouldVoiceAnnounceAverageSpeedRecording() {
+        return getBoolean(R.string.voice_announce_average_speed_recording_key, true);
+    }
+    @VisibleForTesting
+    public static void setVoiceAnnounceAverageSpeedRecording(boolean value) {
+        setBoolean(R.string.voice_announce_average_speed_recording_key, value);
+    }
+
 
     public static Distance getRecordingDistanceInterval() {
         return Distance.of(getInt(R.string.recording_distance_interval_key, getRecordingDistanceIntervalDefaultInternal()));
@@ -854,5 +960,31 @@ public class PreferencesUtils {
     public static void resetTotalRowsDeleted() {
         setInt(R.string.total_rows_deleted_key, 0);
     }
+
+    public static String getSelectedCountry() {
+        return getString(R.string.settings_profile_country_key, "");
+    }
+
+    public static void setSelectedCountry(final String selectedCountry) {
+        setString(R.string.settings_profile_country_key, selectedCountry);
+    }
+
+    public static void addCustomActivity(Context context, String activityName) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String existingActivities = prefs.getString(context.getString(R.string.key_custom_activities), "");
+        if (!existingActivities.contains(activityName)) {
+            existingActivities += (existingActivities.isEmpty() ? "" : ";") + activityName;
+            prefs.edit().putString(context.getString(R.string.key_custom_activities), existingActivities).apply();
+        }
+    }
+
+    public static List<String> getCustomActivities(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String activitiesString = prefs.getString(context.getString(R.string.key_custom_activities), "");
+        return Arrays.asList(activitiesString.split(";"));
+    }
+
+
+
 
 }
