@@ -118,17 +118,18 @@ public class AggregatedStatisticsAdapter extends RecyclerView.Adapter<RecyclerVi
                 public void onClick(View v) {
                     Context context = viewBinding.getRoot().getContext();
                     Intent intent = new Intent(context, DaySpecificActivity.class);
+                    context.startActivity(intent);
                 }
             });
 
-            viewBinding.dayStatisticsBtn.setOnClickListener(new View.OnClickListener() {
+            /*viewBinding.dayStatisticsBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Context context = viewBinding.getRoot().getContext();
                     Intent intent = new Intent(context, DayStatisticsActivity.class);
                     context.startActivity(intent);
                 }
-            });
+            });*/
         }
 
         public void setSpeed(AggregatedStatistics.AggregatedStatistic aggregatedStatistic) {
@@ -201,6 +202,18 @@ public class AggregatedStatisticsAdapter extends RecyclerView.Adapter<RecyclerVi
                 viewBinding.aggregatedStatsSlopePercentLabel.setText("Average Slope %");
                 viewBinding.aggregatedStatsSlopePercentUnit.setText("%");
             }
+//            for the time duration of skiing
+//            if (activityType.equals("skiing")){
+//
+//                viewBinding.totalSkiingDurationTextView.setVisibility(View.VISIBLE);
+//                viewBinding.aggregatedStatsSkiingDurationLabel.setVisibility(View.VISIBLE);
+//
+//                if (aggregatedStatistic.getTrackStatistics().getTotalSkiingDuration(LocalDate date) == null) {
+//                    viewBinding.totalSkiingDurationTextView.setText("00:00:00");
+//                } else {
+//                    viewBinding.totalSkiingDurationTextView.setText(String.valueOf(aggregatedStatistic.getTrackStatistics().getTotalSkiingDuration()));
+//                }
+//            }
         }
 
         private int getIcon(AggregatedStatistics.AggregatedStatistic aggregatedStatistic) {
