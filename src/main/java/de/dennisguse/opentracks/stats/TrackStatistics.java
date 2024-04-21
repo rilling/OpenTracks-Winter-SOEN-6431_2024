@@ -64,8 +64,11 @@ public class TrackStatistics {
 
     private boolean isIdle;
 
-    // Slope % between this point and the previous point
-    private Float slopePercent_m;
+     // Slope % between this point and the previous point
+     private Float slopePercent_m;
+     private Float maximumSpeedPerRun;
+     private double averageSpeedPerRun;
+
 
 
     /**
@@ -105,27 +108,30 @@ public class TrackStatistics {
         reset();
     }
 
-    /**
-     * Copy constructor.
-     *
-     * @param other another statistics data object to copy from
-     */
-    public TrackStatistics(TrackStatistics other) {
-        startTime = other.startTime;
-        stopTime = other.stopTime;
-        totalDistance = other.totalDistance;
-        totalTime = other.totalTime;
-        movingTime = other.movingTime;
-        maxSpeed = other.maxSpeed;
-        altitudeExtremities.set(other.altitudeExtremities.getMin(), other.altitudeExtremities.getMax());
-        totalAltitudeGain_m = other.totalAltitudeGain_m;
-        totalAltitudeLoss_m = other.totalAltitudeLoss_m;
-        avgHeartRate = other.avgHeartRate;
-        isIdle = other.isIdle;
-        slopePercent_m = other.slopePercent_m;
-        totalChairliftWaitingTime=other.totalChairliftWaitingTime;
-        endOfRunCounter=other.endOfRunCounter;
-    }
+     /**
+      * Copy constructor.
+      *
+      * @param other another statistics data object to copy from
+      */
+     public TrackStatistics(TrackStatistics other) {
+         startTime = other.startTime;
+         stopTime = other.stopTime;
+         totalDistance = other.totalDistance;
+         totalTime = other.totalTime;
+         movingTime = other.movingTime;
+         maxSpeed = other.maxSpeed;
+         altitudeExtremities.set(other.altitudeExtremities.getMin(), other.altitudeExtremities.getMax());
+         totalAltitudeGain_m = other.totalAltitudeGain_m;
+         totalAltitudeLoss_m = other.totalAltitudeLoss_m;
+         avgHeartRate = other.avgHeartRate;
+         isIdle = other.isIdle;
+         slopePercent_m = other.slopePercent_m;
+         maximumSpeedPerRun = other.maximumSpeedPerRun;
+         averageSpeedPerRun=other.averageSpeedPerRun;
+         totalChairliftWaitingTime=other.totalChairliftWaitingTime;
+         endOfRunCounter=other.endOfRunCounter;
+     }
+
 
     @VisibleForTesting
     public TrackStatistics(String startTime, String stopTime, double totalDistance_m, int totalTime_s, int movingTime_s, float maxSpeed_mps, Float totalAltitudeGain_m, Float totalAltitudeLoss_m) {
@@ -423,9 +429,26 @@ public class TrackStatistics {
         this.slopePercent_m = slopePercent;
     }
 
-    public boolean hasSlope() {
-        return slopePercent_m != null;
-    }
+     public boolean hasSlope() {
+         return  slopePercent_m != null;
+     }
+     public float getMaximumSpeedPerRun() {
+         return maximumSpeedPerRun;
+     }
+
+     public void setMaximumSpeedPerRun(float maximumSpeedPerRun) {
+         this.maximumSpeedPerRun = maximumSpeedPerRun;
+     }
+
+     public double getAverageSpeedPerRun() {
+         return averageSpeedPerRun;
+     }
+
+     public void setAverageSpeedPerRun(double speed) {
+         this.averageSpeedPerRun = speed;
+
+     }
+
 
     // Method to calculate the total skiing duration for the current day
 //    public Duration getTotalSkiingDuration() {
@@ -486,16 +509,17 @@ public class TrackStatistics {
         return toString().equals(o.toString());
     }
 
-    @NonNull
-    @Override
-    public String toString() {
-        return "TrackStatistics { Start Time: " + getStartTime() + "; Stop Time: " + getStopTime()
-                + "; Total Distance: " + getTotalDistance() + "; Total Time: " + getTotalTime()
-                + "; Moving Time: " + getMovingTime() + "; Max Speed: " + getMaxSpeed()
-                + "; Min Altitude: " + getMinAltitude() + "; Max Altitude: " + getMaxAltitude()
-                + "; Altitude Gain: " + getTotalAltitudeGain()
-                + "; Altitude Loss: " + getTotalAltitudeLoss()
-                + "; Slope%: " + getSlopePercent() + "}";
-    }
-}
-
+     @NonNull
+     @Override
+     public String toString() {
+         return "TrackStatistics { Start Time: " + getStartTime() + "; Stop Time: " + getStopTime()
+                 + "; Total Distance: " + getTotalDistance() + "; Total Time: " + getTotalTime()
+                 + "; Moving Time: " + getMovingTime() + "; Max Speed: " + getMaxSpeed()
+                 + "; Maximum Speed Per Run: " + getMaximumSpeedPerRun()
+                 + "; Average Speed Per Run: " + getAverageSpeedPerRun()
+                 + "; Min Altitude: " + getMinAltitude() + "; Max Altitude: " + getMaxAltitude()
+                 + "; Altitude Gain: " + getTotalAltitudeGain()
+                 + "; Altitude Loss: " + getTotalAltitudeLoss()
+                 + "; Slope%: " + getSlopePercent() + "}";
+     }
+ }
