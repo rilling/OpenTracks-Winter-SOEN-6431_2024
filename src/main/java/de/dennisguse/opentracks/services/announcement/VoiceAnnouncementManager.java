@@ -144,7 +144,7 @@ public class VoiceAnnouncementManager implements SharedPreferences.OnSharedPrefe
         int currentRunCount=track.getTrackStatistics().getEndOfRunCounter();
         int lastRunCount=this.lastRunCount;
         this.lastRunCount = currentRunCount;
-        Log.i(TAG, this.lastRunCount+"");
+
         // decide if it is the end of the run
         if (currentRunCount <= lastRunCount){
             return;

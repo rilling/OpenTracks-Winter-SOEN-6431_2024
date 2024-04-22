@@ -200,7 +200,12 @@ public class TrackStatisticsUpdater {
         float altitudeGain = trackPoint.hasAltitudeGain()? trackPoint.getAltitudeGain(): 0f;
         float altitudeLoss = trackPoint.hasAltitudeLoss()? trackPoint.getAltitudeLoss(): 0f;
         float currentAltitudeChange = Math.max(altitudeGain, altitudeLoss);
-
+        if (trackPoint.getSpeed()!=null){
+            double currentSpeed=trackPoint.getSpeed().toMPS();
+            if (currentSpeed > trackStatistics.getMaximumSpeedPerRun()){
+                trackStatistics.setMaximumSpeedPerRun(((float) currentSpeed));
+            }
+        }
 
         if (currentAltitudeChange<=minimumAltitudeChangeAllowed
                 && trackPoint.getAltitude()!=null
