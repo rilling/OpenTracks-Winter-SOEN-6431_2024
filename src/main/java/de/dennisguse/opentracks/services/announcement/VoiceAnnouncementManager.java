@@ -70,6 +70,8 @@ public class VoiceAnnouncementManager implements SharedPreferences.OnSharedPrefe
     private IntervalStatistics intervalStatistics;
     private Distance intervalDistance;
 
+    private int lastRunCount=0;
+
     public VoiceAnnouncementManager(@NonNull Context context) {
         this.context = context;
         contentProviderUtils = new ContentProviderUtils(context);
@@ -139,19 +141,28 @@ public class VoiceAnnouncementManager implements SharedPreferences.OnSharedPrefe
             return;
         }
 
-        boolean announce = false;
-        this.trackStatistics = track.getTrackStatistics();
-        if (trackStatistics.getTotalDistance().greaterThan(nextTotalDistance)) {
-            updateNextTaskDistance();
-            announce = true;
-        }
-        if (!trackStatistics.getTotalTime().minus(nextTotalTime).isNegative()) {
-            updateNextDuration();
-            announce = true;
+        int currentRunCount=track.getTrackStatistics().getEndOfRunCounter();
+        int lastRunCount=this.lastRunCount;
+        this.lastRunCount = currentRunCount;
+        Log.i(TAG, this.lastRunCount+"");
+        // decide if it is the end of the run
+        if (currentRunCount <= lastRunCount){
+            return;
         }
 
+
+        boolean announce = true;
+//        this.trackStatistics = track.getTrackStatistics();
+//        if (trackStatistics.getTotalDistance().greaterThan(nextTotalDistance)) {
+//            updateNextTaskDistance();
+//            announce = true;
+//        }
+//        if (!trackStatistics.getTotalTime().minus(nextTotalTime).isNegative()) {
+//            updateNextDuration();
+//            announce = true;
+//        }
+
         if (announce) {
-            //TODO: Once we have run data from other groups, change the conditions to only call this if we're at the end of a run
             voiceAnnouncement.announce(VoiceAnnouncementUtils.createRunStatistics(context, track.getTrackStatistics(), PreferencesUtils.getUnitSystem()));
         }
     }
