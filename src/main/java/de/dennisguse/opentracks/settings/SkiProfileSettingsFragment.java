@@ -1,5 +1,6 @@
 package de.dennisguse.opentracks.settings;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
@@ -39,6 +40,11 @@ public class SkiProfileSettingsFragment extends PreferenceFragmentCompat {
             ((SettingsActivity) getActivity()).getSupportFragmentManager().beginTransaction().replace(R.id.settings_fragment, new SkiProfileWaxingFragment()).addToBackStack(getString(R.string.ski_profile_waxing_info_title)).commit();
             return true;
         });
+
+        findPreference(getString(R.string.ski_profile_ski_maintenance_title)).setOnPreferenceClickListener(preference -> {
+            ((SettingsActivity) getActivity()).getSupportFragmentManager().beginTransaction().replace(R.id.settings_fragment, new SkiProfileMaintenanceFragment()).addToBackStack(getString(R.string.ski_profile_ski_maintenance_title)).commit();
+            return true;
+        });
     }
 
 
@@ -60,6 +66,7 @@ public class SkiProfileSettingsFragment extends PreferenceFragmentCompat {
             int maxNameLength = 20;
             editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(maxNameLength)});
         });
+
 
         EditTextPreference phoneInput = findPreference(getString(R.string.settings_ski_profile_phone_key));
         phoneInput.setDialogTitle(getString(R.string.settings_ski_profile_phone_dialog_title));
