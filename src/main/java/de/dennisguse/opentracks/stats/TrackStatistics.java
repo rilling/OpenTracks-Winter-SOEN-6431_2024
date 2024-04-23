@@ -14,56 +14,55 @@
  * the License.
  */
 
- package de.dennisguse.opentracks.stats;
+package de.dennisguse.opentracks.stats;
 
- import androidx.annotation.NonNull;
- import androidx.annotation.Nullable;
- import androidx.annotation.VisibleForTesting;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
- import java.time.Duration;
- import java.time.Instant;
+import java.time.Duration;
+import java.time.Instant;
 
- import de.dennisguse.opentracks.data.models.Altitude;
- import de.dennisguse.opentracks.data.models.Distance;
- import de.dennisguse.opentracks.data.models.HeartRate;
- import de.dennisguse.opentracks.data.models.Speed;
- import de.dennisguse.opentracks.data.models.Track;
- import de.dennisguse.opentracks.data.models.TrackPoint;
+import de.dennisguse.opentracks.data.models.Altitude;
+import de.dennisguse.opentracks.data.models.Distance;
+import de.dennisguse.opentracks.data.models.HeartRate;
+import de.dennisguse.opentracks.data.models.Speed;
+import de.dennisguse.opentracks.data.models.Track;
+import de.dennisguse.opentracks.data.models.TrackPoint;
 
- /**
-  * Statistical data about a {@link Track}.
-  * The data in this class should be filled out by {@link TrackStatisticsUpdater}.
-  *
-  * @author Rodrigo Damazio
-  */
- //TODO Use null instead of Double.isInfinite
- //TODO Check that data ranges are valid (not less than zero etc.)
- //TODO Should be a Java record
- public class TrackStatistics {
+/**
+ * Statistical data about a {@link Track}.
+ * The data in this class should be filled out by {@link TrackStatisticsUpdater}.
+ *
+ * @author Rodrigo Damazio
+ */
+//TODO Use null instead of Double.isInfinite
+//TODO Check that data ranges are valid (not less than zero etc.)
+//TODO Should be a Java record
+public class TrackStatistics {
 
-     // The min and max altitude (meters) seen on this track.
-     private final ExtremityMonitor altitudeExtremities = new ExtremityMonitor();
+    // The min and max altitude (meters) seen on this track.
+    private final ExtremityMonitor altitudeExtremities = new ExtremityMonitor();
 
-     // The track start time.
-     private Instant startTime;
-     // The track stop time.
-     private Instant stopTime;
+    // The track start time.
+    private Instant startTime;
+    // The track stop time.
+    private Instant stopTime;
 
-     private Distance totalDistance;
-     // Updated when new points are received, may be stale.
-     private Duration totalTime;
-     // Based on when we believe the user is traveling.
-     private Duration movingTime;
-     // The maximum speed (meters/second) that we believe is valid.
-     private Speed maxSpeed;
+    private Distance totalDistance;
+    // Updated when new points are received, may be stale.
+    private Duration totalTime;
+    // Based on when we believe the user is traveling.
+    private Duration movingTime;
+    // The maximum speed (meters/second) that we believe is valid.
+    private Speed maxSpeed;
+    private Float totalAltitudeGain_m = null;
+    private Float totalAltitudeLoss_m = null;
 
-     private Float totalAltitudeGain_m = null;
-     private Float totalAltitudeLoss_m = null;
+    // The average heart rate seen on this track
+    private HeartRate avgHeartRate = null;
 
-     // The average heart rate seen on this track
-     private HeartRate avgHeartRate = null;
-
-     private boolean isIdle;
+    private boolean isIdle;
 
      // Slope % between this point and the previous point
      private Float slopePercent_m;
@@ -72,6 +71,46 @@
      public TrackStatistics() {
          reset();
      }
+    // Slope % between this point and the previous point
+    private Float slopePercent_m;
+
+
+    /**
+     * Total time user spent for waiting for chairlift
+     */
+    private Duration totalChairliftWaitingTime;
+
+    /**
+     * this function can be used to fetch Total Chairlift Waiting time for display in UI
+     * */
+    public Duration getTotalChairliftWaitingTime() {
+        return totalChairliftWaitingTime;
+    }
+
+    public void setTotalChairliftWaitingTime(Duration totalChairliftWaitingTime) {
+        this.totalChairliftWaitingTime = totalChairliftWaitingTime;
+    }
+
+    /**
+     * this counter is to check how many continuous trackpoints the user is stagnant near lower base of track.
+     * once the threshold of this counter is reached, we start adding the parsed time to totalChairliftWaitingTime until counter is again reset.
+     */
+    private int endOfRunCounter;
+
+    public int getEndOfRunCounter() {
+        return this.endOfRunCounter;
+    }
+    public void incrementEndOfRunCounter() {
+         this.endOfRunCounter++;
+    }
+
+    public void resetEndOfRunCounter() {
+        this.endOfRunCounter = 0;
+    }
+
+    public TrackStatistics() {
+        reset();
+    }
 
      /**
       * Copy constructor.
@@ -91,6 +130,8 @@
          avgHeartRate = other.avgHeartRate;
          isIdle = other.isIdle;
          slopePercent_m = other.slopePercent_m;
+         totalChairliftWaitingTime=other.totalChairliftWaitingTime;
+         endOfRunCounter=other.endOfRunCounter;
          maximumSpeedPerRun = other.maximumSpeedPerRun;
          averageSpeedPerRun=other.averageSpeedPerRun;
      }
@@ -107,304 +148,293 @@
          this.totalAltitudeLoss_m = totalAltitudeLoss_m;
      }
 
-     /**
-      * Combines these statistics with those from another object.
-      * This assumes that the time periods covered by each do not intersect.
-      *
-      * @param other another statistics data object
-      */
-     public void merge(TrackStatistics other) {
-         if (startTime == null) {
-             startTime = other.startTime;
-         } else {
-             startTime = startTime.isBefore(other.startTime) ? startTime : other.startTime;
-         }
-         if (stopTime == null) {
-             stopTime = other.stopTime;
-         } else {
-             stopTime = stopTime.isAfter(other.stopTime) ? stopTime : other.stopTime;
-         }
+    /**
+     * Combines these statistics with those from another object.
+     * This assumes that the time periods covered by each do not intersect.
+     *
+     * @param other another statistics data object
+     */
+    public void merge(TrackStatistics other) {
+        if (startTime == null) {
+            startTime = other.startTime;
+        } else {
+            startTime = startTime.isBefore(other.startTime) ? startTime : other.startTime;
+        }
+        if (stopTime == null) {
+            stopTime = other.stopTime;
+        } else {
+            stopTime = stopTime.isAfter(other.stopTime) ? stopTime : other.stopTime;
+        }
 
-         if (avgHeartRate == null) {
-             avgHeartRate = other.avgHeartRate;
-         } else {
-             if (other.avgHeartRate != null) {
-                 // Using total time as weights for the averaging.
-                 // Important to do this before total time is updated
-                 avgHeartRate = HeartRate.of(
-                         (totalTime.getSeconds() * avgHeartRate.getBPM() + other.totalTime.getSeconds() * other.avgHeartRate.getBPM())
-                                 / (totalTime.getSeconds() + other.totalTime.getSeconds())
-                 );
-             }
-         }
+        if (avgHeartRate == null) {
+            avgHeartRate = other.avgHeartRate;
+        } else {
+            if (other.avgHeartRate != null) {
+                // Using total time as weights for the averaging.
+                // Important to do this before total time is updated
+                avgHeartRate = HeartRate.of(
+                        (totalTime.getSeconds() * avgHeartRate.getBPM() + other.totalTime.getSeconds() * other.avgHeartRate.getBPM())
+                                / (totalTime.getSeconds() + other.totalTime.getSeconds())
+                );
+            }
+        }
 
-         totalDistance = totalDistance.plus(other.totalDistance);
-         totalTime = totalTime.plus(other.totalTime);
-         movingTime = movingTime.plus(other.movingTime);
-         maxSpeed = Speed.max(maxSpeed, other.maxSpeed);
-         if (other.altitudeExtremities.hasData()) {
-             altitudeExtremities.update(other.altitudeExtremities.getMin());
-             altitudeExtremities.update(other.altitudeExtremities.getMax());
-         }
-         if (totalAltitudeGain_m == null) {
-             if (other.totalAltitudeGain_m != null) {
-                 totalAltitudeGain_m = other.totalAltitudeGain_m;
-             }
-         } else {
-             if (other.totalAltitudeGain_m != null) {
-                 totalAltitudeGain_m += other.totalAltitudeGain_m;
-             }
-         }
-         if (totalAltitudeLoss_m == null) {
-             if (other.totalAltitudeLoss_m != null) {
-                 totalAltitudeLoss_m = other.totalAltitudeLoss_m;
-             }
-         } else {
-             if (other.totalAltitudeLoss_m != null) {
-                 totalAltitudeLoss_m += other.totalAltitudeLoss_m;
-             }
-         }
-     }
+        totalDistance = totalDistance.plus(other.totalDistance);
+        totalTime = totalTime.plus(other.totalTime);
+        movingTime = movingTime.plus(other.movingTime);
+        maxSpeed = Speed.max(maxSpeed, other.maxSpeed);
+        if (other.altitudeExtremities.hasData()) {
+            altitudeExtremities.update(other.altitudeExtremities.getMin());
+            altitudeExtremities.update(other.altitudeExtremities.getMax());
+        }
+        if (totalAltitudeGain_m == null) {
+            if (other.totalAltitudeGain_m != null) {
+                totalAltitudeGain_m = other.totalAltitudeGain_m;
+            }
+        } else {
+            if (other.totalAltitudeGain_m != null) {
+                totalAltitudeGain_m += other.totalAltitudeGain_m;
+            }
+        }
+        if (totalAltitudeLoss_m == null) {
+            if (other.totalAltitudeLoss_m != null) {
+                totalAltitudeLoss_m = other.totalAltitudeLoss_m;
+            }
+        } else {
+            if (other.totalAltitudeLoss_m != null) {
+                totalAltitudeLoss_m += other.totalAltitudeLoss_m;
+            }
+        }
 
-     public boolean isInitialized() {
-         return startTime != null;
-     }
+        totalChairliftWaitingTime = totalChairliftWaitingTime.plus(other.totalChairliftWaitingTime);
+        endOfRunCounter+= other.endOfRunCounter;
+    }
 
-     public void reset() {
-         startTime = null;
-         stopTime = null;
+    public boolean isInitialized() {
+        return startTime != null;
+    }
 
-         setTotalDistance(Distance.of(0));
-         setTotalTime(Duration.ofSeconds(0));
-         setMovingTime(Duration.ofSeconds(0));
-         setMaxSpeed(Speed.zero());
-         setTotalAltitudeGain(null);
-         setTotalAltitudeLoss(null);
-         setSlopePercent(null);
+    public void reset() {
+        startTime = null;
+        stopTime = null;
 
-         isIdle = false;
-     }
+        setTotalDistance(Distance.of(0));
+        setTotalTime(Duration.ofSeconds(0));
+        setMovingTime(Duration.ofSeconds(0));
+        setMaxSpeed(Speed.zero());
+        setTotalAltitudeGain(null);
+        setTotalAltitudeLoss(null);
+        setSlopePercent(null);
 
-     public void reset(Instant startTime) {
-         reset();
-         setStartTime(startTime);
-     }
+        setTotalChairliftWaitingTime(Duration.ofSeconds(0));
+        resetEndOfRunCounter();
 
-     public Instant getStartTime() {
-         return startTime;
-     }
+        isIdle = false;
+    }
 
-     /**
-      * Should only be called on start.
-      */
-     public void setStartTime(Instant startTime) {
-         this.startTime = startTime;
-         setStopTime(startTime);
-     }
+    public void reset(Instant startTime) {
+        reset();
+        setStartTime(startTime);
+    }
 
-     public Instant getStopTime() {
-         return stopTime;
-     }
+    public Instant getStartTime() {
+        return startTime;
+    }
 
-     public void setStopTime(Instant stopTime) {
-         if (stopTime.isBefore(startTime)) {
-             // Time must be monotonically increasing, but we might have events at the same point in time (BLE and GPS)
-             throw new RuntimeException("stopTime cannot be less than startTime: " + startTime + " " + stopTime);
-         }
-         this.stopTime = stopTime;
-     }
+    /**
+     * Should only be called on start.
+     */
+    public void setStartTime(Instant startTime) {
+        this.startTime = startTime;
+        setStopTime(startTime);
+    }
 
-     public Distance getTotalDistance() {
-         return totalDistance;
-     }
+    public Instant getStopTime() {
+        return stopTime;
+    }
 
-     public void setTotalDistance(Distance totalDistance_m) {
-         this.totalDistance = totalDistance_m;
-     }
+    public void setStopTime(Instant stopTime) {
+        if (stopTime.isBefore(startTime)) {
+            // Time must be monotonically increasing, but we might have events at the same point in time (BLE and GPS)
+            throw new RuntimeException("stopTime cannot be less than startTime: " + startTime + " " + stopTime);
+        }
+        this.stopTime = stopTime;
+    }
 
-     public void addTotalDistance(Distance distance_m) {
-         totalDistance = totalDistance.plus(distance_m);
-     }
+    public Distance getTotalDistance() {
+        return totalDistance;
+    }
 
-     /**
-      * Gets the total time in milliseconds that this track has been active.
-      * This statistic is only updated when a new point is added to the statistics, so it may be off.
-      * If you need to calculate the proper total time, use {@link #getStartTime} with the current time.
-      */
-     public Duration getTotalTime() {
-         return totalTime;
-     }
+    public void setTotalDistance(Distance totalDistance_m) {
+        this.totalDistance = totalDistance_m;
+    }
 
-     public void setTotalTime(Duration totalTime) {
-         this.totalTime = totalTime;
-     }
+    public void addTotalDistance(Distance distance_m) {
+        totalDistance = totalDistance.plus(distance_m);
+    }
 
-     public Duration getMovingTime() {
-         return movingTime;
-     }
+    /**
+     * Gets the total time in milliseconds that this track has been active.
+     * This statistic is only updated when a new point is added to the statistics, so it may be off.
+     * If you need to calculate the proper total time, use {@link #getStartTime} with the current time.
+     */
+    public Duration getTotalTime() {
+        return totalTime;
+    }
 
-     public void setMovingTime(Duration movingTime) {
-         this.movingTime = movingTime;
-     }
+    public void setTotalTime(Duration totalTime) {
+        this.totalTime = totalTime;
+    }
 
-     public void addMovingTime(TrackPoint trackPoint, TrackPoint lastTrackPoint) {
-         addMovingTime(Duration.between(lastTrackPoint.getTime(), trackPoint.getTime()));
-     }
+    public Duration getMovingTime() {
+        return movingTime;
+    }
 
-     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-     public void addMovingTime(Duration time) {
-         if (time.isNegative()) {
-             throw new RuntimeException("Moving time cannot be negative");
-         }
-         movingTime = movingTime.plus(time);
-     }
+    public void setMovingTime(Duration movingTime) {
+        this.movingTime = movingTime;
+    }
 
-     public Duration getStoppedTime() {
-         return totalTime.minus(movingTime);
-     }
+    public void addMovingTime(TrackPoint trackPoint, TrackPoint lastTrackPoint) {
+        addMovingTime(Duration.between(lastTrackPoint.getTime(), trackPoint.getTime()));
+    }
 
-     public boolean isIdle() {
-         return isIdle;
-     }
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public void addMovingTime(Duration time) {
+        if (time.isNegative()) {
+            throw new RuntimeException("Moving time cannot be negative");
+        }
+        movingTime = movingTime.plus(time);
+    }
 
-     public void setIdle(boolean idle) {
-         isIdle = idle;
-     }
+    public Duration getStoppedTime() {
+        return totalTime.minus(movingTime);
+    }
 
-     public boolean hasAverageHeartRate() {
-         return avgHeartRate != null;
-     }
+    public boolean isIdle() {
+        return isIdle;
+    }
 
-     @Nullable
-     public HeartRate getAverageHeartRate() {
-         return avgHeartRate;
-     }
+    public void setIdle(boolean idle) {
+        isIdle = idle;
+    }
 
-     /**
-      * Gets the average speed.
-      * This calculation only takes into account the displacement until the last point that was accounted for in statistics.
-      */
-     public Speed getAverageSpeed() {
-         if (totalTime.isZero()) {
-             return Speed.of(0);
-         }
-         return Speed.of(totalDistance.toM() / totalTime.getSeconds());
-     }
+    public boolean hasAverageHeartRate() {
+        return avgHeartRate != null;
+    }
 
-     public Speed getAverageMovingSpeed() {
-         return Speed.of(totalDistance, movingTime);
-     }
+    @Nullable
+    public HeartRate getAverageHeartRate() {
+        return avgHeartRate;
+    }
 
-     public Speed getMaxSpeed() {
-         return Speed.max(maxSpeed, getAverageMovingSpeed());
-     }
+    /**
+     * Gets the average speed.
+     * This calculation only takes into account the displacement until the last point that was accounted for in statistics.
+     */
+    public Speed getAverageSpeed() {
+        if (totalTime.isZero()) {
+            return Speed.of(0);
+        }
+        return Speed.of(totalDistance.toM() / totalTime.getSeconds());
+    }
 
-     public void setMaxSpeed(Speed maxSpeed) {
-         this.maxSpeed = maxSpeed;
-     }
+    public Speed getAverageMovingSpeed() {
+        return Speed.of(totalDistance, movingTime);
+    }
 
-     public boolean hasAltitudeMin() {
-         return !Double.isInfinite(getMinAltitude());
-     }
+    public Speed getMaxSpeed() {
+        return Speed.max(maxSpeed, getAverageMovingSpeed());
+    }
 
-     public double getMinAltitude() {
-         return altitudeExtremities.getMin();
-     }
+    public void setMaxSpeed(Speed maxSpeed) {
+        this.maxSpeed = maxSpeed;
+    }
 
-     public void setMinAltitude(double altitude_m) {
-         altitudeExtremities.setMin(altitude_m);
-     }
+    public boolean hasAltitudeMin() {
+        return !Double.isInfinite(getMinAltitude());
+    }
 
-     public boolean hasAltitudeMax() {
-         return !Double.isInfinite(getMaxAltitude());
-     }
+    public double getMinAltitude() {
+        return altitudeExtremities.getMin();
+    }
 
-     /**
-      * Gets the maximum altitude.
-      * This is calculated from the smoothed altitude, so this can actually be less than the current altitude.
-      */
-     public double getMaxAltitude() {
-         return altitudeExtremities.getMax();
-     }
+    public void setMinAltitude(double altitude_m) {
+        altitudeExtremities.setMin(altitude_m);
+    }
 
-     public void setMaxAltitude(double altitude_m) {
-         altitudeExtremities.setMax(altitude_m);
-     }
+    public boolean hasAltitudeMax() {
+        return !Double.isInfinite(getMaxAltitude());
+    }
 
-     public void updateAltitudeExtremities(Altitude altitude) {
-         if (altitude != null) {
-             altitudeExtremities.update(altitude.toM());
-         }
-     }
+    /**
+     * Gets the maximum altitude.
+     * This is calculated from the smoothed altitude, so this can actually be less than the current altitude.
+     */
+    public double getMaxAltitude() {
+        return altitudeExtremities.getMax();
+    }
 
-     public void setAverageHeartRate(HeartRate heartRate) {
-         if (heartRate != null) {
-             avgHeartRate = heartRate;
-         }
-     }
+    public void setMaxAltitude(double altitude_m) {
+        altitudeExtremities.setMax(altitude_m);
+    }
 
-     public boolean hasTotalAltitudeGain() {
-         return totalAltitudeGain_m != null;
-     }
+    public void updateAltitudeExtremities(Altitude altitude) {
+        if (altitude != null) {
+            altitudeExtremities.update(altitude.toM());
+        }
+    }
 
-     @Nullable
-     public Float getTotalAltitudeGain() {
-         return totalAltitudeGain_m;
-     }
+    public void setAverageHeartRate(HeartRate heartRate) {
+        if (heartRate != null) {
+            avgHeartRate = heartRate;
+        }
+    }
 
-     public void setTotalAltitudeGain(Float totalAltitudeGain_m) {
-         this.totalAltitudeGain_m = totalAltitudeGain_m;
-     }
+    public boolean hasTotalAltitudeGain() {
+        return totalAltitudeGain_m != null;
+    }
 
-     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-     public void addTotalAltitudeGain(float gain_m) {
-         if (totalAltitudeGain_m == null) {
-             totalAltitudeGain_m = 0f;
-         }
-         totalAltitudeGain_m += gain_m;
-     }
+    @Nullable
+    public Float getTotalAltitudeGain() {
+        return totalAltitudeGain_m;
+    }
 
-     public boolean hasTotalAltitudeLoss() {
-         return totalAltitudeLoss_m != null;
-     }
+    public void setTotalAltitudeGain(Float totalAltitudeGain_m) {
+        this.totalAltitudeGain_m = totalAltitudeGain_m;
+    }
 
-     @Nullable
-     public Float getTotalAltitudeLoss() {
-         return totalAltitudeLoss_m;
-     }
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public void addTotalAltitudeGain(float gain_m) {
+        if (totalAltitudeGain_m == null) {
+            totalAltitudeGain_m = 0f;
+        }
+        totalAltitudeGain_m += gain_m;
+    }
 
-     public void setTotalAltitudeLoss(Float totalAltitudeLoss_m) {
-         this.totalAltitudeLoss_m = totalAltitudeLoss_m;
-     }
+    public boolean hasTotalAltitudeLoss() {
+        return totalAltitudeLoss_m != null;
+    }
 
-     public Float getSlopePercent() {
-         return  slopePercent_m;
-     }
+    @Nullable
+    public Float getTotalAltitudeLoss() {
+        return totalAltitudeLoss_m;
+    }
 
-     public void setSlopePercent(Float slopePercent) {
-         this.slopePercent_m = slopePercent;
-     }
+    public void setTotalAltitudeLoss(Float totalAltitudeLoss_m) {
+        this.totalAltitudeLoss_m = totalAltitudeLoss_m;
+    }
 
-     public boolean hasSlope() {
-         return  slopePercent_m != null;
-     }
-     public float getMaximumSpeedPerRun() {
-         return maximumSpeedPerRun;
-     }
+    public Float getSlopePercent() {
+        return slopePercent_m;
+    }
 
-     public void setMaximumSpeedPerRun(float maximumSpeedPerRun) {
-         this.maximumSpeedPerRun = maximumSpeedPerRun;
-     }
+    public void setSlopePercent(Float slopePercent) {
+        this.slopePercent_m = slopePercent;
+    }
 
-     public double getAverageSpeedPerRun() {
-         return averageSpeedPerRun;
-     }
-
-     public void setAverageSpeedPerRun(double speed) {
-         this.averageSpeedPerRun = speed;
-
-     }
-
+    public boolean hasSlope() {
+        return slopePercent_m != null;
+    }
 
      @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
      public void addTotalAltitudeLoss(float loss_m) {
@@ -413,14 +443,64 @@
          }
          totalAltitudeLoss_m += loss_m;
      }
+    // Method to calculate the total skiing duration for the current day
+//    public Duration getTotalSkiingDuration() {
+//        return getTotalSkiingDuration(LocalDate.now());
+//    }
+//
+//    // Method to calculate the total skiing duration for a specific date
+//    public Duration getTotalSkiingDuration(LocalDate date) {
+//        Duration time = TrackImporter.getTotalSkiingDuration(date);
+//
+//        return TrackImporter.totalSkiingDuration;
+//    }
+//
+//    // Method to determine if skiing is detected between two track points
+//    private boolean isSkiingSegment(TrackPoint startPoint, TrackPoint endPoint) {
+//        // Thresholds to determine skiing activity
+//        double altitudeChangeThreshold = 10.0; // Meters
+//        double speedThreshold = 5.0; // Meters per second
+//        long timeThresholdInSeconds = 50; // Seconds
+//
+//        // Check if altitude change is significant
+//        double altitudeChange = Math.abs(startPoint.getAltitude().toM() - endPoint.getAltitude().toM());
+//        if (altitudeChange < altitudeChangeThreshold) {
+//            return false; // Altitude change not significant, likely not skiing
+//        }
+//
+//        // Calculate total distance
+////        double totalDistance = startPoint.distanceTo(endPoint).toKM();
+//
+//        // Calculate total time (in seconds)
+//        long totalTimeInSeconds = Duration.between(startPoint.getTime(), endPoint.getTime()).getSeconds();
+//
+//        // Calculate average speed
+////        double averageSpeed = totalDistance / totalTimeInSeconds;
+//
+//        // Check if average speed is above the speed threshold
+//        return totalTimeInSeconds >= timeThresholdInSeconds;
+//    }
+//
+//    // Method to check if two Instant objects belong to the same LocalDate
+//    private boolean isSameDate(Instant instant, LocalDate date) {
+//        return instant.atZone(ZoneId.systemDefault()).toLocalDate().isEqual(date);
+//    }
+//
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public void addTotalAltitudeLoss(float loss_m) {
+        if (totalAltitudeLoss_m == null) {
+            totalAltitudeLoss_m = 0f;
+        }
+        totalAltitudeLoss_m += loss_m;
+    }
 
-     @Override
-     public boolean equals(Object o) {
-         if (this == o) return true;
-         if (!(o instanceof TrackStatistics)) return false;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof TrackStatistics)) return false;
 
-         return toString().equals(o.toString());
-     }
+        return toString().equals(o.toString());
+    }
 
      @NonNull
      @Override

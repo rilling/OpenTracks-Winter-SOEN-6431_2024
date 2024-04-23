@@ -82,12 +82,23 @@ limitations under the License.
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/OpenTracksTheme">
+
+        <activity
+            android:name=".ui.aggregatedStatistics.daySpecificStats.DaySpecificActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.aggregatedStatistics.daySpecificStats.DaySpecificActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.aggregatedStatistics.SeasonStats.RunAndChairStatActivity"
             android:exported="false" />
         <activity
             android:name=".ui.aggregatedStatistics.SeasonStats.SeasonStatActivity"
             android:exported="false" />
+        <activity
+            android:name=".ui.aggregatedStatistics.daystatistics.DayStatisticsActivity"
+            android:exported="false" />
+      
         <activity
             android:name=".publicapi.StartRecording"
             android:exported="true"
