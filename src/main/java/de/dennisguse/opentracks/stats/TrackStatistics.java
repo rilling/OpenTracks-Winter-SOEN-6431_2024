@@ -435,14 +435,29 @@ public class TrackStatistics {
     public boolean hasSlope() {
         return slopePercent_m != null;
     }
-
-     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-     public void addTotalAltitudeLoss(float loss_m) {
-         if (totalAltitudeLoss_m == null) {
-             totalAltitudeLoss_m = 0f;
-         }
-         totalAltitudeLoss_m += loss_m;
+    public float getMaximumSpeedPerRun() {
+         return maximumSpeedPerRun;
      }
+
+    public void setMaximumSpeedPerRun(float maximumSpeedPerRun) {
+        this.maximumSpeedPerRun = maximumSpeedPerRun;
+    }
+
+    public double getAverageSpeedPerRun() {
+        return averageSpeedPerRun;
+    }
+
+    public void setAverageSpeedPerRun(double speed) {
+        this.averageSpeedPerRun = speed;
+
+    }
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public void addTotalAltitudeLoss(float loss_m) {
+        if (totalAltitudeLoss_m == null) {
+            totalAltitudeLoss_m = 0f;
+        }
+        totalAltitudeLoss_m += loss_m;
+    }
     // Method to calculate the total skiing duration for the current day
 //    public Duration getTotalSkiingDuration() {
 //        return getTotalSkiingDuration(LocalDate.now());
