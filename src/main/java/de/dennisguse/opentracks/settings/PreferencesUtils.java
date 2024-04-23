@@ -498,6 +498,16 @@ public class PreferencesUtils {
         setBoolean(R.string.voice_announce_max_slope_key, value);
     }
 
+    public static boolean shouldVoiceAnnounceTotalWaitingTime() {
+        return getBoolean(R.string.voice_announce_total_waiting_time_key, true);
+    }
+    
+    @VisibleForTesting
+    public static void setVoiceAnnounceTotalWaitingTime(boolean value) {
+        setBoolean(R.string.voice_announce_total_waiting_time_key, value);
+    }
+    
+
     // recoding related setting helper methods
     public static boolean shouldVoiceAnnounceMaxSpeedRecording() {
         return getBoolean(R.string.voice_announce_max_speed_recording_key, true);
