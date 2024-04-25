@@ -440,7 +440,7 @@ public class TrackStatistics {
         Log.d("getSpeed",""+maximumSpeedPerRun);
         if (maximumSpeedPerRun!=null)
             return maximumSpeedPerRun;
-        return -1f;
+        return 0;
      }
 
      public void setMaximumSpeedPerRun(float maximumSpeedPerRun) {

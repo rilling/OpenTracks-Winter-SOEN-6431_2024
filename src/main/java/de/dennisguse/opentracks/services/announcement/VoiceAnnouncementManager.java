@@ -151,16 +151,20 @@ public class VoiceAnnouncementManager implements SharedPreferences.OnSharedPrefe
         }
 
 
-        boolean announce = true;
-//        this.trackStatistics = track.getTrackStatistics();
-//        if (trackStatistics.getTotalDistance().greaterThan(nextTotalDistance)) {
-//            updateNextTaskDistance();
-//            announce = true;
-//        }
-//        if (!trackStatistics.getTotalTime().minus(nextTotalTime).isNegative()) {
-//            updateNextDuration();
-//            announce = true;
-//        }
+        boolean announce = false;
+        this.trackStatistics = track.getTrackStatistics();
+        if (trackStatistics.getTotalDistance().greaterThan(nextTotalDistance)) {
+            updateNextTaskDistance();
+            announce = true;
+        }
+        if (!trackStatistics.getTotalTime().minus(nextTotalTime).isNegative()) {
+            updateNextDuration();
+            announce = true;
+        }
+
+        if (PreferencesUtils.shouldVoiceAnnounceMaxSpeedRun()){
+            announce = true;
+        }
 
         if (announce) {
             voiceAnnouncement.announce(VoiceAnnouncementUtils.createRunStatistics(context, track.getTrackStatistics(), PreferencesUtils.getUnitSystem()));
