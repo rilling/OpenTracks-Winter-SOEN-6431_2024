@@ -85,8 +85,8 @@ class VoiceAnnouncementUtils {
         Speed maxSpeed = trackStatistics.getMaxSpeed();
         Speed avgSpeed = trackStatistics.getAverageSpeed();
 
-        long startTime = ...; // Provide the start time in milliseconds
-        long endTime = ...; // Provide the end time in milliseconds
+        long startTime = System.currentTimeMillis(); // Provide the start time in milliseconds
+        long endTime = startTime + (5 * 60 * 1000); // Provide the end time in milliseconds
 
         // Calculate waiting time using the calculateWaitingTime method
         double waitingTime = calculateWaitingTime(startTime, endTime);
