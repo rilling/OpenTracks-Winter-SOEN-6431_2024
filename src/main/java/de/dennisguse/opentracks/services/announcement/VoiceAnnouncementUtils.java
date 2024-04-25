@@ -61,6 +61,18 @@ class VoiceAnnouncementUtils {
         // This is dummy methods to fetch or calculate the average slope.
         return 10.0;
     }
+    public static double calculateWaitingTime(long startTime, long endTime) {
+        // Ensure start time is before end time
+        if (startTime > endTime) {
+            throw new IllegalArgumentException("Start time cannot be after end time.");
+        }
+
+        // Calculate the waiting time in milliseconds
+        long waitingTimeInMillis = endTime - startTime;
+        // Convert waiting time to minutes
+        double waitingTimeInMinutes = waitingTimeInMillis / (60.0 * 1000.0);
+        return waitingTimeInMinutes;
+    }
 
 
     static Spannable createIdle(Context context) {
@@ -72,6 +84,15 @@ class VoiceAnnouncementUtils {
         SpannableStringBuilder builder = new SpannableStringBuilder();
         Speed maxSpeed = trackStatistics.getMaxSpeed();
         Speed avgSpeed = trackStatistics.getAverageSpeed();
+
+        long startTime = ...; // Provide the start time in milliseconds
+        long endTime = ...; // Provide the end time in milliseconds
+
+        // Calculate waiting time using the calculateWaitingTime method
+        double waitingTime = calculateWaitingTime(startTime, endTime);
+        // Example usage of waitingTime
+        builder.append("Waiting time: ").append(String.valueOf(waitingTime)).append(" minutes. ");
+    
 
         int perUnitStringId;
         int distanceId;
@@ -123,6 +144,7 @@ class VoiceAnnouncementUtils {
                         .append(".");
             }
         }
+        
 
         if (shouldVoiceAnnounceAverageSpeedRecording()) {
 
