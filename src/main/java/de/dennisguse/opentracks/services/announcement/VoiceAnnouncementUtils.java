@@ -37,6 +37,7 @@ import de.dennisguse.opentracks.settings.UnitSystem;
 import de.dennisguse.opentracks.stats.SensorStatistics;
 import de.dennisguse.opentracks.stats.TrackStatistics;
 import de.dennisguse.opentracks.ui.intervals.IntervalStatistics;
+import de.dennisguse.opentracks.stats.EnhancedTrackStatistics;
 
 class VoiceAnnouncementUtils {
 
@@ -61,17 +62,11 @@ class VoiceAnnouncementUtils {
         // This is dummy methods to fetch or calculate the average slope.
         return 10.0;
     }
-    public static double calculateWaitingTime(long startTime, long endTime) {
-        // Ensure start time is before end time
-        if (startTime > endTime) {
-            throw new IllegalArgumentException("Start time cannot be after end time.");
-        }
-
-        // Calculate the waiting time in milliseconds
-        long waitingTimeInMillis = endTime - startTime;
-        // Convert waiting time to minutes
-        double waitingTimeInMinutes = waitingTimeInMillis / (60.0 * 1000.0);
-        return waitingTimeInMinutes;
+    
+    // Method to calculate total waiting time
+    public long calculateTotalWaitingTime(EnhancedTrackStatistics stats) {
+        // Get the waiting time for chairlift from EnhancedTrackStatistics
+        return stats.getWaitingTimeForChairlift();
     }
 
 
@@ -85,13 +80,7 @@ class VoiceAnnouncementUtils {
         Speed maxSpeed = trackStatistics.getMaxSpeed();
         Speed avgSpeed = trackStatistics.getAverageSpeed();
 
-        long startTime = System.currentTimeMillis(); // Provide the start time in milliseconds
-        long endTime = startTime + (5 * 60 * 1000); // Provide the end time in milliseconds
-
-        // Calculate waiting time using the calculateWaitingTime method
-        double waitingTime = calculateWaitingTime(startTime, endTime);
-        // Example usage of waitingTime
-        builder.append("Waiting time: ").append(String.valueOf(waitingTime)).append(" minutes. ");
+        
     
 
         int perUnitStringId;
