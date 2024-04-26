@@ -119,6 +119,12 @@ public class TrackStatisticsUpdater {
             currentSegment.addTotalAltitudeLoss(trackPoint.getAltitudeLoss());
         }
 
+        if (trackPoint.getSpeed()!=null){
+            double currentSpeed=trackPoint.getSpeed().toMPS();
+            if (currentSpeed > trackStatistics.getMaximumSpeedPerRun()){
+                trackStatistics.setMaximumSpeedPerRun(((float) currentSpeed));
+            }
+        }
         // this function will always be called for all trackpoints to check if it is waiting for chairlift
         // and also modify values for the check according to current trackpoint.
         if (isWaitingForChairlift(trackPoint)){
@@ -129,6 +135,18 @@ public class TrackStatisticsUpdater {
         //Update absolute (GPS-based) altitude
         if (trackPoint.hasAltitude()) {
             currentSegment.updateAltitudeExtremities(trackPoint.getAltitude());
+            if (lastTrackPoint!=null&&lastTrackPoint.hasAltitude()){
+                double altitude=trackPoint.getAltitude().toM();
+                double lastAltitude =lastTrackPoint.getAltitude().toM();
+                double altitudeDifference = altitude- lastAltitude;
+                if (altitudeDifference>0){
+                    currentSegment.addTotalAltitudeGain((float) altitudeDifference);
+                }else{
+                    currentSegment.addTotalAltitudeLoss(-(float) altitudeDifference);
+                    currentSegment.addAltitudeRun(-(float) altitudeDifference);
+                }
+            }
+
         }
 
         // Update heart rate
@@ -156,6 +174,7 @@ public class TrackStatisticsUpdater {
             if (movingDistance != null) {
                 currentSegment.setIdle(false);
                 currentSegment.addTotalDistance(movingDistance);
+                currentSegment.addDistanceRun(movingDistance);
             }
 
             if (!currentSegment.isIdle() && !trackPoint.isSegmentManualStart()) {
@@ -266,7 +285,9 @@ public class TrackStatisticsUpdater {
         }
 
         // Slope = Change in Distance / Change in Altitude
-        Float slopePercentChangedBetweenPoints = (float) ((altituteChanged / distanceMoved.toM()) * 100);
+        Float slopePercentChangedBetweenPoints = 0f;
+        if (distanceMoved.toM() != 0)
+            slopePercentChangedBetweenPoints = (float) ((altituteChanged / distanceMoved.toM()) * 100);
         Float prevAggregatedSlopePercent = currentSegment.hasSlope() ? currentSegment.getSlopePercent() : 0;
         Float aggregatedSlopePercent = prevAggregatedSlopePercent + slopePercentChangedBetweenPoints;
         currentSegment.setSlopePercent(aggregatedSlopePercent);
