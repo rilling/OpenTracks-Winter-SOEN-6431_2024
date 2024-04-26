@@ -75,9 +75,13 @@ public class TrackStatistics {
 
     private Float altitudeRun;
 
-
-
     private Duration timeRun;
+
+    private Double latitude;
+
+
+
+    private Double longitude;
 
 
 
@@ -145,7 +149,8 @@ public class TrackStatistics {
          altitudeRun=other.altitudeRun;
          distanceRun=other.totalDistance;
          timeRun=other.timeRun;
-
+         latitude=other.latitude;
+         longitude=other.longitude;
      }
 
 
@@ -229,6 +234,12 @@ public class TrackStatistics {
         altitudeRun += other.altitudeRun;
         distanceRun = distanceRun.plus(other.distanceRun);
         timeRun= timeRun.plus(other.timeRun);
+        if(other.longitude!=null){
+            longitude=other.longitude;
+        }
+        if(other.latitude!=null){
+            latitude=other.latitude;
+        }
     }
 
     public boolean isInitialized() {
@@ -519,6 +530,22 @@ public class TrackStatistics {
     public void setTimeRun(Duration timeRun) {
         this.timeRun = timeRun;
         Log.d("timeRun",this.timeRun.getSeconds()+"");
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 
 

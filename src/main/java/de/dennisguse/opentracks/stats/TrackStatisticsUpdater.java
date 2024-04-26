@@ -131,6 +131,11 @@ public class TrackStatisticsUpdater {
                 currentSegment.setMaximumSpeedPerRun(((float) currentSpeed));
             }
         }
+        if (trackPoint.hasLocation()){
+            currentSegment.setLatitude(trackPoint.getLatitude());
+            currentSegment.setLongitude(trackPoint.getLongitude());
+        }
+
         // this function will always be called for all trackpoints to check if it is waiting for chairlift
         // and also modify values for the check according to current trackpoint.
         if (isWaitingForChairlift(trackPoint)){

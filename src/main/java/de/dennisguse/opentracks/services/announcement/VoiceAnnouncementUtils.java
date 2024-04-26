@@ -81,7 +81,7 @@ class VoiceAnnouncementUtils {
         Distance totalDistance = trackStatistics.getTotalDistance();
         Float altitudeGain=trackStatistics.getTotalAltitudeGain();
         Float altitudeLoss=trackStatistics.getTotalAltitudeLoss();
-        Double temperature = fetchTempData();
+        Double temperature = WeatherFetchService.fetchTempData(trackStatistics.getLatitude(),trackStatistics.getLongitude());
 
 
         Duration skiingTime = trackStatistics.getTotalTime().minus(trackStatistics.getTotalChairliftWaitingTime());
@@ -152,7 +152,7 @@ class VoiceAnnouncementUtils {
 		
 
         if (shouldVoiceAnnounceTimeSkiedRecording()) {
-            double timeSkied = calculateTimeSkied(); // Calculate the maximum slope based on elevation data
+            double timeSkied = skiingTime.toSeconds(); // Calculate the maximum slope based on elevation data
             if (!Double.isNaN(timeSkied)) {
                 builder.append(" ")
                         .append(context.getString(R.string.settings_announcements_time_skied_recording))
