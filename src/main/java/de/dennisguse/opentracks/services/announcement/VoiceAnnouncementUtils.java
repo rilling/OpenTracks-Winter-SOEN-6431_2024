@@ -137,6 +137,7 @@ class VoiceAnnouncementUtils {
 
         if (shouldVoiceAnnounceTimeSkiedRecording()) {
             double timeSkied = calculateTimeSkied(); // Calculate the maximum slope based on elevation data
+            //TODO double timeSkied = trackStatistics.getTotalSkiingDuration();
             if (!Double.isNaN(timeSkied)) {
                 builder.append(" ")
                         .append(context.getString(R.string.settings_announcements_time_skied_recording))
