@@ -16,6 +16,8 @@
 
 package de.dennisguse.opentracks.stats;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -68,6 +70,7 @@ public class TrackStatistics {
      private Float slopePercent_m;
      private Float maximumSpeedPerRun;
      private double averageSpeedPerRun;
+	 private Float AverageslopePerRun;
 
 
 
@@ -98,10 +101,12 @@ public class TrackStatistics {
     }
     public void incrementEndOfRunCounter() {
          this.endOfRunCounter++;
+        Log.d("EndCounter", this.endOfRunCounter+"");
     }
 
     public void resetEndOfRunCounter() {
         this.endOfRunCounter = 0;
+        Log.d("EndCounter", "reset counter");
     }
 
     public TrackStatistics() {
@@ -433,11 +438,27 @@ public class TrackStatistics {
          return  slopePercent_m != null;
      }
      public float getMaximumSpeedPerRun() {
-         return maximumSpeedPerRun;
+        Log.d("getSpeed",""+maximumSpeedPerRun);
+        if (maximumSpeedPerRun!=null)
+            return maximumSpeedPerRun;
+        return 0;
      }
 
      public void setMaximumSpeedPerRun(float maximumSpeedPerRun) {
+         Log.d("setSpeed",""+maximumSpeedPerRun);
          this.maximumSpeedPerRun = maximumSpeedPerRun;
+     }
+	 
+	 public float getAverageslopePerRun() {
+        
+        if (AverageslopePerRun!=null)
+            return AverageslopePerRun;
+        return 0;
+     }
+
+     public void setAverageslopePerRun(float AverageslopePerRun) {
+         Log.d("setSlope",""+AverageslopePerRun);
+         this.AverageslopePerRun = AverageslopePerRun;
      }
 
      public double getAverageSpeedPerRun() {
