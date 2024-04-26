@@ -63,6 +63,14 @@ class VoiceAnnouncementUtils {
         return 10.0;
     }
 
+    private static double calculateAverageSlope(Distance totalDistance, Float altitudeGain, Float altitudeLoss) {
+        double avgSlope=0;
+        if (totalDistance!=null&&altitudeGain!=null&&altitudeLoss!=null){
+            avgSlope=(altitudeGain+altitudeLoss)/totalDistance.toM()*100;
+        }
+        return  avgSlope;
+    }
+
 
     static Spannable createIdle(Context context) {
         return new SpannableStringBuilder()
@@ -153,10 +161,7 @@ class VoiceAnnouncementUtils {
 
 
         if (shouldVoiceAnnounceAveragesloperecording()) {
-            double avgSlope=0;
-            if (totalDistance!=null&&altitudeGain!=null&&altitudeLoss!=null){
-                avgSlope=(altitudeGain+altitudeLoss)/totalDistance.toM()*100;
-            }
+            double avgSlope=calculateAverageSlope(totalDistance,altitudeGain,altitudeLoss);
             if (!Double.isNaN(avgSlope)) {
                 builder.append(" ")
                         .append("Average slope")
