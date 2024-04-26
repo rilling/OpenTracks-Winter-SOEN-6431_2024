@@ -10,7 +10,7 @@
             android:summary="Choose the time period to view statistics"
             android:entries="@array/time_periods"
             android:entryValues="@array/time_periods"
-            android:defaultValue="monthly" />
+            android:defaultValue="Total" />
 
     </PreferenceCategory>
 
