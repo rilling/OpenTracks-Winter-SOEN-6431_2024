@@ -155,7 +155,7 @@ class VoiceAnnouncementUtils {
         if (shouldVoiceAnnounceAveragesloperecording()) {
             double avgSlope=0;
             if (totalDistance!=null&&altitudeGain!=null&&altitudeLoss!=null){
-                avgSlope=(altitudeGain+altitudeLoss)/totalDistance.toM();
+                avgSlope=(altitudeGain+altitudeLoss)/totalDistance.toM()*100;
             }
             if (!Double.isNaN(avgSlope)) {
                 builder.append(" ")

@@ -140,9 +140,9 @@ public class TrackStatisticsUpdater {
                 double lastAltitude =lastTrackPoint.getAltitude().toM();
                 double altitudeDifference = altitude- lastAltitude;
                 if (altitudeDifference>0){
-                    trackStatistics.addTotalAltitudeGain((float) altitudeDifference);
+                    currentSegment.addTotalAltitudeGain((float) altitudeDifference);
                 }else{
-                    trackStatistics.addTotalAltitudeLoss(-(float) altitudeDifference);
+                    currentSegment.addTotalAltitudeLoss(-(float) altitudeDifference);
                 }
             }
 
