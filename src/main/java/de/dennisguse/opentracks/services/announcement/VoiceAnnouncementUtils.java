@@ -23,7 +23,6 @@ import android.icu.text.MessageFormat;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.TtsSpan;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,7 +37,7 @@ import de.dennisguse.opentracks.settings.UnitSystem;
 import de.dennisguse.opentracks.stats.SensorStatistics;
 import de.dennisguse.opentracks.stats.TrackStatistics;
 import de.dennisguse.opentracks.ui.intervals.IntervalStatistics;
-import de.dennisguse.opentracks.stats.EnhancedTrackStatistics;
+
 
 class VoiceAnnouncementUtils {
     private static Double currentMaxSlope;
@@ -64,12 +63,8 @@ class VoiceAnnouncementUtils {
         // This is dummy methods to fetch or calculate the average slope.
         return 10.0;
     }
-    
-    // Method to calculate total waiting time
-    public static long calculateTotalWaitingTime(EnhancedTrackStatistics stats) {
-        // Get the waiting time for chairlift from EnhancedTrackStatistics
-        return stats.getWaitingTimeForChairlift();
-    }
+
+
 
     private static double calculateAverageSlope(Distance totalDistance, Float altitudeGain, Float altitudeLoss) {
         double avgSlope=0;
@@ -191,12 +186,12 @@ class VoiceAnnouncementUtils {
                     .append(context.getString(R.string.settings_announcements_total_waiting_time))
                     .append(": ");
             if (waitingMinutes>0){
-                builder.append(waitingMinutes+" ");
+                builder.append(waitingMinutes+" minutes ");
             }
             if (waitingSeconds>0){
-                builder.append(waitingSeconds+" ");
+                builder.append(waitingSeconds+" seconds ");
             }
-            builder.append(waitingTimeLong+".");
+            builder.append(".");
         }
 
         return builder;

@@ -214,7 +214,7 @@ public class TrackStatisticsUpdater {
         // indicates altitude difference allowed in case of small change elevation change while waiting in queue for chairlift
         final float minimumAltitudeChangeAllowed = 0.2f;
         final float minimumDeviationAllowedFromLowestAltitude = 1f;
-        final int thresholdTrackpointsForNoMovement=5;
+        final int thresholdTrackpointsForNoMovement=1;
 
         float altitudeGain = trackPoint.hasAltitudeGain()? trackPoint.getAltitudeGain(): 0f;
         float altitudeLoss = trackPoint.hasAltitudeLoss()? trackPoint.getAltitudeLoss(): 0f;
