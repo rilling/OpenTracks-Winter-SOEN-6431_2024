@@ -109,6 +109,12 @@ public class TrackStatisticsUpdater {
         // Always update time
         currentSegment.setStopTime(trackPoint.getTime());
         currentSegment.setTotalTime(Duration.between(currentSegment.getStartTime(), trackPoint.getTime()));
+        if(lastTrackPoint!=null){
+            Duration timeBetween=Duration.between(lastTrackPoint.getTime(),trackPoint.getTime());
+            currentSegment.setTimeRun(currentSegment.getTimeRun().plus(timeBetween));
+
+        }
+
 
         // Process sensor data: barometer
         if (trackPoint.hasAltitudeGain()) {
@@ -121,8 +127,8 @@ public class TrackStatisticsUpdater {
 
         if (trackPoint.getSpeed()!=null){
             double currentSpeed=trackPoint.getSpeed().toMPS();
-            if (currentSpeed > trackStatistics.getMaximumSpeedPerRun()){
-                trackStatistics.setMaximumSpeedPerRun(((float) currentSpeed));
+            if (currentSpeed > currentSegment.getMaximumSpeedPerRun()){
+                currentSegment.setMaximumSpeedPerRun(((float) currentSpeed));
             }
         }
         // this function will always be called for all trackpoints to check if it is waiting for chairlift
