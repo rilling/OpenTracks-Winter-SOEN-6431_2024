@@ -82,14 +82,14 @@ class VoiceAnnouncementUtils {
                 .append(context.getString(R.string.voiceIdle));
     }
 
-    static Spannable createAfterRecording(Context context, TrackStatistics trackStatistics, UnitSystem unitSystem, WeatherFetchService weatherapi) {
+    static Spannable createAfterRecording(Context context, TrackStatistics trackStatistics, UnitSystem unitSystem) {
         SpannableStringBuilder builder = new SpannableStringBuilder();
         Speed maxSpeed = trackStatistics.getMaxSpeed();
         Speed avgSpeed = trackStatistics.getAverageSpeed();
         Distance totalDistance = trackStatistics.getTotalDistance();
         Float altitudeGain=trackStatistics.getTotalAltitudeGain();
         Float altitudeLoss=trackStatistics.getTotalAltitudeLoss();
-        Double temperature = weatherapi.fetchTempData();
+        Double temperature = fetchTempData();
 
 
         Duration waitingTime = trackStatistics.getTotalChairliftWaitingTime();
