@@ -88,6 +88,11 @@
             android:title="@string/settings_announcements_average_slope_recording"
             app:key="@string/voice_announce_average_slope_recording_key" />
 
+        <SwitchPreferenceCompat
+            android:defaultValue="@bool/voice_announce_temperature_default"
+            android:key="@string/voice_announce_temperature_key"
+            android:title="@string/settings_announcements_temperature" />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/settings_announcements_run_title">

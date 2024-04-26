@@ -11,7 +11,7 @@ import static de.dennisguse.opentracks.settings.PreferencesUtils.shouldVoiceAnno
 import static de.dennisguse.opentracks.settings.PreferencesUtils.shouldVoiceAnnounceRunAverageSpeed;
 import static de.dennisguse.opentracks.settings.PreferencesUtils.shouldVoiceAnnounceMaxSlope;
 import static de.dennisguse.opentracks.settings.PreferencesUtils.shouldVoiceAnnounceAveragesloperecording;
-
+import static de.dennisguse.opentracks.settings.PreferencesUtils.shouldVoiceAnnounceTemperature;
 import static de.dennisguse.opentracks.settings.PreferencesUtils.shouldVoiceAnnounceMaxSpeedRecording;
 
 import android.content.Context;
