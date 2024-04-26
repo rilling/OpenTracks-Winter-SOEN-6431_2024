@@ -45,14 +45,6 @@ class VoiceAnnouncementUtils {
     private VoiceAnnouncementUtils() {
     }
 
-
-    static double calculateTimeSkied() {
-
-           return 0.0; 
-		   
-    }
-	
-
     static double calculateMaxSlope() {
 
         // This method should return the calculated maximum slope.
@@ -87,8 +79,7 @@ class VoiceAnnouncementUtils {
         Distance totalDistance = trackStatistics.getTotalDistance();
         Float altitudeGain=trackStatistics.getTotalAltitudeGain();
         Float altitudeLoss=trackStatistics.getTotalAltitudeLoss();
-
-
+        Duration skiingTime = trackStatistics.getTotalTime().minus(trackStatistics.getTotalChairliftWaitingTime());
         Duration waitingTime = trackStatistics.getTotalChairliftWaitingTime();
     
 
@@ -153,19 +144,6 @@ class VoiceAnnouncementUtils {
             appendDecimalUnit(builder, MessageFormat.format(template, Map.of("n", speedInUnit)), speedInUnit, 1, unitSpeedTTS);
             builder.append(".");
         }
-		
-
-        if (shouldVoiceAnnounceTimeSkiedRecording()) {
-            double timeSkied = calculateTimeSkied(); // Calculate the maximum slope based on elevation data
-            if (!Double.isNaN(timeSkied)) {
-                builder.append(" ")
-                        .append(context.getString(R.string.settings_announcements_time_skied_recording))
-                        .append(": ")
-                        .append(String.format("%.2f%%", timeSkied)) // Format the slope value
-                        .append(".");
-            }
-        }
-
 
         if (shouldVoiceAnnounceAveragesloperecording()) {
             double avgSlope=calculateAverageSlope(totalDistance,altitudeGain,altitudeLoss);
@@ -180,8 +158,8 @@ class VoiceAnnouncementUtils {
 
         if (shouldVoiceAnnounceTotalWaitingTime()){
             long waitingTimeLong=waitingTime.toSeconds();
-            long waitingMinutes=waitingTimeLong%60;
-            long waitingSeconds=waitingTimeLong/60;
+            long waitingMinutes=waitingTimeLong/60;
+            long waitingSeconds=waitingTimeLong%60;
             builder.append(" ")
                     .append(context.getString(R.string.settings_announcements_total_waiting_time))
                     .append(": ");
@@ -190,6 +168,23 @@ class VoiceAnnouncementUtils {
             }
             if (waitingSeconds>0){
                 builder.append(waitingSeconds+" seconds ");
+            }
+            builder.append(".");
+        }
+
+        if (shouldVoiceAnnounceTimeSkiedRecording()) {
+            long skiingTimeLong=skiingTime.toSeconds();
+            long skiingMinutes=skiingTimeLong/60;
+            long skiingSeconds=skiingTimeLong%60;
+
+            builder.append(" ")
+                    .append(context.getString(R.string.settings_announcements_time_skied_recording))
+                    .append(": ");
+            if (skiingMinutes>0){
+                builder.append(skiingMinutes+" minutes ");
+            }
+            if (skiingSeconds>0){
+                builder.append(skiingSeconds+" seconds ");
             }
             builder.append(".");
         }
