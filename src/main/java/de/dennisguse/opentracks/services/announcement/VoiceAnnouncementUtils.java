@@ -162,9 +162,9 @@ class VoiceAnnouncementUtils {
 
     static Spannable createRunStatistics(Context context, TrackStatistics trackStatistics, UnitSystem unitSystem) {
         SpannableStringBuilder builder = new SpannableStringBuilder();
-        //TODO: Once we get run data from other groups, we can announce run statistics instead of track statistics
+        
         Distance totalDistance = trackStatistics.getTotalDistance();
-        Speed averageMovingSpeed = trackStatistics.getAverageMovingSpeed();
+        Speed averageMovingSpeed = Speed.of(trackStatistics.getAverageSpeedPerRun());
         Speed maxSpeed = trackStatistics.getMaxSpeed();
         int speedId;
         String unitSpeedTTS;
