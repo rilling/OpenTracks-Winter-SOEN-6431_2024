@@ -73,6 +73,10 @@ class VoiceAnnouncementUtils {
         SpannableStringBuilder builder = new SpannableStringBuilder();
         Speed maxSpeed = trackStatistics.getMaxSpeed();
         Speed avgSpeed = trackStatistics.getAverageSpeed();
+        Distance totalDistance = trackStatistics.getTotalDistance();
+        Float altitudeGain=trackStatistics.getTotalAltitudeGain();
+        Float altitudeLoss=trackStatistics.getTotalAltitudeLoss();
+
 
         int perUnitStringId;
         int distanceId;
@@ -149,7 +153,10 @@ class VoiceAnnouncementUtils {
 
 
         if (shouldVoiceAnnounceAveragesloperecording()) {
-            double avgSlope = CalculateAverageSlope();
+            double avgSlope=0;
+            if (totalDistance!=null&&altitudeGain!=null&&altitudeLoss!=null){
+                avgSlope=(altitudeGain+altitudeLoss)/totalDistance.toM();
+            }
             if (!Double.isNaN(avgSlope)) {
                 builder.append(" ")
                         .append("Average slope")

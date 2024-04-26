@@ -21,7 +21,7 @@ import androidx.annotation.NonNull;
 import java.time.Duration;
 import java.util.List;
 
- import de.dennisguse.opentracks.data.models.Distance;
+import de.dennisguse.opentracks.data.models.Distance;
  import de.dennisguse.opentracks.data.models.HeartRate;
  import de.dennisguse.opentracks.data.models.Speed;
  import de.dennisguse.opentracks.data.models.TrackPoint;
@@ -135,6 +135,17 @@ public class TrackStatisticsUpdater {
         //Update absolute (GPS-based) altitude
         if (trackPoint.hasAltitude()) {
             currentSegment.updateAltitudeExtremities(trackPoint.getAltitude());
+            if (lastTrackPoint!=null&&lastTrackPoint.hasAltitude()){
+                double altitude=trackPoint.getAltitude().toM();
+                double lastAltitude =lastTrackPoint.getAltitude().toM();
+                double altitudeDifference = altitude- lastAltitude;
+                if (altitudeDifference>0){
+                    trackStatistics.addTotalAltitudeGain((float) altitudeDifference);
+                }else{
+                    trackStatistics.addTotalAltitudeLoss(-(float) altitudeDifference);
+                }
+            }
+
         }
 
         // Update heart rate
@@ -272,7 +283,9 @@ public class TrackStatisticsUpdater {
         }
 
         // Slope = Change in Distance / Change in Altitude
-        Float slopePercentChangedBetweenPoints = (float) ((altituteChanged / distanceMoved.toM()) * 100);
+        Float slopePercentChangedBetweenPoints = 0f;
+        if (distanceMoved.toM() != 0)
+            slopePercentChangedBetweenPoints = (float) ((altituteChanged / distanceMoved.toM()) * 100);
         Float prevAggregatedSlopePercent = currentSegment.hasSlope() ? currentSegment.getSlopePercent() : 0;
         Float aggregatedSlopePercent = prevAggregatedSlopePercent + slopePercentChangedBetweenPoints;
         currentSegment.setSlopePercent(aggregatedSlopePercent);
