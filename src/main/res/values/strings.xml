@@ -466,6 +466,7 @@ limitations under the License.
     <string name="settings_announcements_average_slope_run">Average slope</string>  
     <string name="settings_announcements_max_speed_run">Max speed/run</string>
     <string name="settings_announcements_run_average_speed">Run Average Speed</string>
+    <string name="settings_announcements_total_waiting_time">Total Waiting Time</string>
 
 
     <!-- Recording Related Data -->

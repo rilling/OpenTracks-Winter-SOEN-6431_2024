@@ -13,9 +13,9 @@ import static de.dennisguse.opentracks.settings.PreferencesUtils.shouldVoiceAnno
 import static de.dennisguse.opentracks.settings.PreferencesUtils.shouldVoiceAnnounceMaxSlope;
 import static de.dennisguse.opentracks.settings.PreferencesUtils.shouldVoiceAnnounceAveragesloperecording;
 import static de.dennisguse.opentracks.settings.PreferencesUtils.shouldVoiceAnnounceMaxSpeedRecording;
-import static de.dennisguse.opentracks.settings.PreferencesUtils.shouldVoiceAnnounceTimeSkiedRecording;
 import static de.dennisguse.opentracks.settings.PreferencesUtils.shouldVoiceAnnounceAverageSpeedRecording;
 import static de.dennisguse.opentracks.settings.PreferencesUtils.shouldVoiceAnnounceAverageslopeRun;
+import static de.dennisguse.opentracks.settings.PreferencesUtils.shouldVoiceAnnounceTotalWaitingTime;
 
 
 import android.content.Context;
@@ -23,7 +23,6 @@ import android.icu.text.MessageFormat;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.TtsSpan;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,6 +37,7 @@ import de.dennisguse.opentracks.settings.UnitSystem;
 import de.dennisguse.opentracks.stats.SensorStatistics;
 import de.dennisguse.opentracks.stats.TrackStatistics;
 import de.dennisguse.opentracks.ui.intervals.IntervalStatistics;
+
 
 class VoiceAnnouncementUtils {
     private static Double currentMaxSlope;
@@ -64,6 +64,8 @@ class VoiceAnnouncementUtils {
         return 10.0;
     }
 
+
+
     private static double calculateAverageSlope(Distance totalDistance, Float altitudeGain, Float altitudeLoss) {
         double avgSlope=0;
         if (totalDistance!=null&&altitudeGain!=null&&altitudeLoss!=null){
@@ -86,6 +88,9 @@ class VoiceAnnouncementUtils {
         Float altitudeGain=trackStatistics.getTotalAltitudeGain();
         Float altitudeLoss=trackStatistics.getTotalAltitudeLoss();
 
+
+        Duration waitingTime = trackStatistics.getTotalChairliftWaitingTime();
+    
 
         int perUnitStringId;
         int distanceId;
@@ -137,6 +142,7 @@ class VoiceAnnouncementUtils {
                         .append(".");
             }
         }
+        
 
         if (shouldVoiceAnnounceAverageSpeedRecording()) {
 
@@ -171,6 +177,23 @@ class VoiceAnnouncementUtils {
                         .append(".");
             }
         }
+
+        if (shouldVoiceAnnounceTotalWaitingTime()){
+            long waitingTimeLong=waitingTime.toSeconds();
+            long waitingMinutes=waitingTimeLong%60;
+            long waitingSeconds=waitingTimeLong/60;
+            builder.append(" ")
+                    .append(context.getString(R.string.settings_announcements_total_waiting_time))
+                    .append(": ");
+            if (waitingMinutes>0){
+                builder.append(waitingMinutes+" minutes ");
+            }
+            if (waitingSeconds>0){
+                builder.append(waitingSeconds+" seconds ");
+            }
+            builder.append(".");
+        }
+
         return builder;
     }
 
