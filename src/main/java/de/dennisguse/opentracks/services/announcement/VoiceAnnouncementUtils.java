@@ -158,8 +158,8 @@ class VoiceAnnouncementUtils {
 
         if (shouldVoiceAnnounceTotalWaitingTime()){
             long waitingTimeLong=waitingTime.toSeconds();
-            long waitingMinutes=waitingTimeLong%60;
-            long waitingSeconds=waitingTimeLong/60;
+            long waitingMinutes=waitingTimeLong/60;
+            long waitingSeconds=waitingTimeLong%60;
             builder.append(" ")
                     .append(context.getString(R.string.settings_announcements_total_waiting_time))
                     .append(": ");
@@ -174,8 +174,8 @@ class VoiceAnnouncementUtils {
 
         if (shouldVoiceAnnounceTimeSkiedRecording()) {
             long skiingTimeLong=skiingTime.toSeconds();
-            long skiingMinutes=skiingTimeLong%60;
-            long skiingSeconds=skiingTimeLong/60;
+            long skiingMinutes=skiingTimeLong/60;
+            long skiingSeconds=skiingTimeLong%60;
 
             builder.append(" ")
                     .append(context.getString(R.string.settings_announcements_time_skied_recording))
