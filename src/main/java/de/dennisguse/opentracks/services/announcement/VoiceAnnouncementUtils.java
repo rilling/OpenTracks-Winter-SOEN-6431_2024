@@ -23,6 +23,7 @@ import android.icu.text.MessageFormat;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.TtsSpan;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -160,12 +161,19 @@ class VoiceAnnouncementUtils {
         return builder;
     }
 
+    private static void resetRunData(TrackStatistics trackStatistics){
+        trackStatistics.setMaximumSpeedPerRun(0);
+		trackStatistics.setAverageslopePerRun(0);
+    }
+
     static Spannable createRunStatistics(Context context, TrackStatistics trackStatistics, UnitSystem unitSystem) {
         SpannableStringBuilder builder = new SpannableStringBuilder();
         //TODO: Once we get run data from other groups, we can announce run statistics instead of track statistics
         Distance totalDistance = trackStatistics.getTotalDistance();
         Speed averageMovingSpeed = trackStatistics.getAverageMovingSpeed();
-        Speed maxSpeed = trackStatistics.getMaxSpeed();
+        Float maxSpeed = trackStatistics.getMaximumSpeedPerRun();
+		Float Averageslope = trackStatistics.getAverageslopePerRun();
+        resetRunData(trackStatistics);
         int speedId;
         String unitSpeedTTS;
         switch (unitSystem) {
@@ -195,15 +203,15 @@ class VoiceAnnouncementUtils {
             builder.append(".");
         }
 
-        if (shouldVoiceAnnounceMaxSpeedRun()) {
-            double speedInUnit = maxSpeed.to(unitSystem);
+        if (shouldVoiceAnnounceMaxSpeedRun()&&maxSpeed!=null) {
+            double speedInUnit = maxSpeed;
             builder.append(" ")
                     .append(context.getString(R.string.stats_max_speed));
             String template = context.getResources().getString(speedId);
             appendDecimalUnit(builder, MessageFormat.format(template, Map.of("n", speedInUnit)), speedInUnit, 1, unitSpeedTTS);
             builder.append(".");
         }
-        if (shouldVoiceAnnounceAverageslopeRun()) {
+        if (shouldVoiceAnnounceAverageslopeRun() && Averageslope!=null) {
             double avgSlope = CalculateAverageSlope();
             if (!Double.isNaN(avgSlope)) {
                 builder.append(" ")

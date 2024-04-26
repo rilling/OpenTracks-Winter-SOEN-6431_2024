@@ -70,6 +70,8 @@ public class VoiceAnnouncementManager implements SharedPreferences.OnSharedPrefe
     private IntervalStatistics intervalStatistics;
     private Distance intervalDistance;
 
+    private int lastRunCount=0;
+
     public VoiceAnnouncementManager(@NonNull Context context) {
         this.context = context;
         contentProviderUtils = new ContentProviderUtils(context);
@@ -139,6 +141,16 @@ public class VoiceAnnouncementManager implements SharedPreferences.OnSharedPrefe
             return;
         }
 
+        int currentRunCount=track.getTrackStatistics().getEndOfRunCounter();
+        int lastRunCount=this.lastRunCount;
+        this.lastRunCount = currentRunCount;
+
+        // decide if it is the end of the run
+        if (currentRunCount <= lastRunCount){
+            return;
+        }
+
+
         boolean announce = false;
         this.trackStatistics = track.getTrackStatistics();
         if (trackStatistics.getTotalDistance().greaterThan(nextTotalDistance)) {
@@ -147,6 +159,10 @@ public class VoiceAnnouncementManager implements SharedPreferences.OnSharedPrefe
         }
         if (!trackStatistics.getTotalTime().minus(nextTotalTime).isNegative()) {
             updateNextDuration();
+            announce = true;
+        }
+
+        if (PreferencesUtils.shouldVoiceAnnounceMaxSpeedRun() && PreferencesUtils.shouldVoiceAnnounceAverageslopeRun()){
             announce = true;
         }
 
