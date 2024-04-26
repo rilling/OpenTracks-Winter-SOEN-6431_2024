@@ -481,6 +481,7 @@ public class PreferencesUtils {
     @VisibleForTesting
     public static void setVoiceAnnounceTemperature(boolean value) {
         setBoolean(R.string.voice_announce_temperature_key, value);
+    }
     public static void setVoiceAnnounceMaxSpeedRun(boolean value) {
         setBoolean(R.string.voice_announce_max_speed_run_key, value);
     }

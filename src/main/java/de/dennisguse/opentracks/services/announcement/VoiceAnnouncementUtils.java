@@ -38,6 +38,7 @@ import de.dennisguse.opentracks.settings.UnitSystem;
 import de.dennisguse.opentracks.stats.SensorStatistics;
 import de.dennisguse.opentracks.stats.TrackStatistics;
 import de.dennisguse.opentracks.ui.intervals.IntervalStatistics;
+import de.dennisguse.opentracks.services.WeatherFetchService;
 
 
 class VoiceAnnouncementUtils {
@@ -81,13 +82,14 @@ class VoiceAnnouncementUtils {
                 .append(context.getString(R.string.voiceIdle));
     }
 
-    static Spannable createAfterRecording(Context context, TrackStatistics trackStatistics, UnitSystem unitSystem) {
+    static Spannable createAfterRecording(Context context, TrackStatistics trackStatistics, UnitSystem unitSystem, WeatherFetchService weatherapi) {
         SpannableStringBuilder builder = new SpannableStringBuilder();
         Speed maxSpeed = trackStatistics.getMaxSpeed();
         Speed avgSpeed = trackStatistics.getAverageSpeed();
         Distance totalDistance = trackStatistics.getTotalDistance();
         Float altitudeGain=trackStatistics.getTotalAltitudeGain();
         Float altitudeLoss=trackStatistics.getTotalAltitudeLoss();
+        Double temperature = weatherapi.fetchTempData();
 
 
         Duration waitingTime = trackStatistics.getTotalChairliftWaitingTime();
@@ -166,7 +168,16 @@ class VoiceAnnouncementUtils {
                         .append(".");
             }
         }
-
+        if(shouldVoiceAnnounceTemperature()){
+             
+            if (!Double.isNaN(temperature)) {
+                builder.append(" ")
+                        .append(context.getString(R.string.settings_announcements_temperature))
+                        .append(": ")
+                        .append(String.format("%.2f%%", temperature)) // Format the slope value
+                        .append(".");
+            }
+        }
 
         if (shouldVoiceAnnounceAveragesloperecording()) {
             double avgSlope=calculateAverageSlope(totalDistance,altitudeGain,altitudeLoss);
