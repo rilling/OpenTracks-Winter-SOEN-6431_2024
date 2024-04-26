@@ -435,6 +435,11 @@ public class PreferencesUtils {
     public static boolean shouldVoiceAnnounceAverageSpeedPace() {
         return getBoolean(R.string.voice_announce_average_speed_pace_key, true);
     }
+    public static boolean shouldVoiceAnnounceMaxSpeedRun() {
+        return getBoolean(R.string.voice_announce_max_speed_run_key, true);
+    }
+
+    
 
     @VisibleForTesting
     public static void setVoiceAnnounceAverageSpeedPace(boolean value) {
@@ -468,13 +473,15 @@ public class PreferencesUtils {
         setBoolean(R.string.voice_announce_average_heart_rate_key, value);
     }
 
-
-    public static boolean shouldVoiceAnnounceMaxSpeedRun() {
-        return getBoolean(R.string.voice_announce_max_speed_run_key, true);
+    public static boolean shouldVoiceAnnounceTemperature() {
+        return getBoolean(R.string.voice_announce_temperature_key, true);
     }
 
 
     @VisibleForTesting
+    public static void setVoiceAnnounceTemperature(boolean value) {
+        setBoolean(R.string.voice_announce_temperature_key, value);
+    }
     public static void setVoiceAnnounceMaxSpeedRun(boolean value) {
         setBoolean(R.string.voice_announce_max_speed_run_key, value);
     }

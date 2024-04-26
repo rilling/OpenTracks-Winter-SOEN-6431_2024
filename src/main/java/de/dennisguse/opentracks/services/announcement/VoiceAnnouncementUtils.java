@@ -12,6 +12,7 @@ import static de.dennisguse.opentracks.settings.PreferencesUtils.shouldVoiceAnno
 import static de.dennisguse.opentracks.settings.PreferencesUtils.shouldVoiceAnnounceRunAverageSpeed;
 import static de.dennisguse.opentracks.settings.PreferencesUtils.shouldVoiceAnnounceMaxSlope;
 import static de.dennisguse.opentracks.settings.PreferencesUtils.shouldVoiceAnnounceAveragesloperecording;
+import static de.dennisguse.opentracks.settings.PreferencesUtils.shouldVoiceAnnounceTemperature;
 import static de.dennisguse.opentracks.settings.PreferencesUtils.shouldVoiceAnnounceMaxSpeedRecording;
 import static de.dennisguse.opentracks.settings.PreferencesUtils.shouldVoiceAnnounceAverageSpeedRecording;
 import static de.dennisguse.opentracks.settings.PreferencesUtils.shouldVoiceAnnounceAverageslopeRun;
@@ -37,6 +38,7 @@ import de.dennisguse.opentracks.settings.UnitSystem;
 import de.dennisguse.opentracks.stats.SensorStatistics;
 import de.dennisguse.opentracks.stats.TrackStatistics;
 import de.dennisguse.opentracks.ui.intervals.IntervalStatistics;
+import de.dennisguse.opentracks.services.WeatherFetchService;
 
 
 class VoiceAnnouncementUtils {
@@ -79,6 +81,9 @@ class VoiceAnnouncementUtils {
         Distance totalDistance = trackStatistics.getTotalDistance();
         Float altitudeGain=trackStatistics.getTotalAltitudeGain();
         Float altitudeLoss=trackStatistics.getTotalAltitudeLoss();
+        Double temperature = WeatherFetchService.fetchTempData(trackStatistics.getLatitude(),trackStatistics.getLongitude());
+
+
         Duration skiingTime = trackStatistics.getTotalTime().minus(trackStatistics.getTotalChairliftWaitingTime());
         Duration waitingTime = trackStatistics.getTotalChairliftWaitingTime();
     
@@ -143,6 +148,28 @@ class VoiceAnnouncementUtils {
             String template = context.getResources().getString(speedId);
             appendDecimalUnit(builder, MessageFormat.format(template, Map.of("n", speedInUnit)), speedInUnit, 1, unitSpeedTTS);
             builder.append(".");
+        }
+		
+
+        if (shouldVoiceAnnounceTimeSkiedRecording()) {
+            double timeSkied = skiingTime.toSeconds(); // Calculate the maximum slope based on elevation data
+            if (!Double.isNaN(timeSkied)) {
+                builder.append(" ")
+                        .append(context.getString(R.string.settings_announcements_time_skied_recording))
+                        .append(": ")
+                        .append(String.format("%.2f%%", timeSkied)) // Format the slope value
+                        .append(".");
+            }
+        }
+        if(shouldVoiceAnnounceTemperature()){
+             
+            if (!Double.isNaN(temperature)) {
+                builder.append(" ")
+                        .append(context.getString(R.string.settings_announcements_temperature))
+                        .append(": ")
+                        .append(String.format("%.2f%%", temperature)) // Format the slope value
+                        .append(".");
+            }
         }
 
         if (shouldVoiceAnnounceAveragesloperecording()) {
