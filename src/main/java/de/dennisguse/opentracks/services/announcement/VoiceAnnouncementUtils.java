@@ -200,17 +200,25 @@ class VoiceAnnouncementUtils {
         trackStatistics.setMaximumSpeedPerRun(0);
         trackStatistics.setDistanceRun(Distance.of(0));
         trackStatistics.setAltitudeRun(0f);
+        trackStatistics.setTimeRun(Duration.ofSeconds(0));
     }
 
     static Spannable createRunStatistics(Context context, TrackStatistics trackStatistics, UnitSystem unitSystem) {
         SpannableStringBuilder builder = new SpannableStringBuilder();
-        Distance totalDistance = trackStatistics.getTotalDistance();
-        Speed averageMovingSpeed = trackStatistics.getAverageMovingSpeed();
+
+        Distance runDistance = trackStatistics.getDistanceRun();
+        Duration runTime = trackStatistics.getTimeRun();
+        Speed averageMovingSpeed= Speed.of(0);
+        if(runDistance!=null&& runTime!=null){
+            averageMovingSpeed = Speed.of(runDistance,runTime);
+        }
+
+
         Float maxSpeed = trackStatistics.getMaximumSpeedPerRun();
         double averageSlope= calculateAverageSlope(trackStatistics.getDistanceRun(),trackStatistics.getAltitudeRun(),0f);
 
-
         resetRunData(trackStatistics);
+
         int speedId;
         String unitSpeedTTS;
         switch (unitSystem) {

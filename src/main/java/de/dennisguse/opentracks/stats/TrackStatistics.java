@@ -77,6 +77,10 @@ public class TrackStatistics {
 
 
 
+    private Duration timeRun;
+
+
+
     /**
      * Total time user spent for waiting for chairlift
      */
@@ -140,6 +144,7 @@ public class TrackStatistics {
          endOfRunCounter=other.endOfRunCounter;
          altitudeRun=other.altitudeRun;
          distanceRun=other.totalDistance;
+         timeRun=other.timeRun;
 
      }
 
@@ -217,8 +222,13 @@ public class TrackStatistics {
         totalChairliftWaitingTime = totalChairliftWaitingTime.plus(other.totalChairliftWaitingTime);
         endOfRunCounter+= other.endOfRunCounter;
 
+        if (other.maximumSpeedPerRun!=null&&other.maximumSpeedPerRun>maximumSpeedPerRun){
+            maximumSpeedPerRun=other.maximumSpeedPerRun;
+        }
+
         altitudeRun += other.altitudeRun;
         distanceRun = distanceRun.plus(other.distanceRun);
+        timeRun= timeRun.plus(other.timeRun);
     }
 
     public boolean isInitialized() {
@@ -240,8 +250,12 @@ public class TrackStatistics {
         setTotalChairliftWaitingTime(Duration.ofSeconds(0));
         resetEndOfRunCounter();
 
+        setMaximumSpeedPerRun(0f);
+
         altitudeRun = 0f;
         setDistanceRun(Distance.of(0));
+
+        setTimeRun(Duration.ofSeconds(0));
 
 
         isIdle = false;
@@ -496,6 +510,15 @@ public class TrackStatistics {
 
     public void addDistanceRun(Distance distance_m) {
         distanceRun = distanceRun.plus(distance_m);
+    }
+
+    public Duration getTimeRun() {
+        return timeRun;
+    }
+
+    public void setTimeRun(Duration timeRun) {
+        this.timeRun = timeRun;
+        Log.d("timeRun",this.timeRun.getSeconds()+"");
     }
 
 
