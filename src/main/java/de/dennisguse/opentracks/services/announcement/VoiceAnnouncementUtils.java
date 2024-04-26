@@ -40,6 +40,7 @@ import de.dennisguse.opentracks.stats.TrackStatistics;
 import de.dennisguse.opentracks.ui.intervals.IntervalStatistics;
 
 class VoiceAnnouncementUtils {
+    private static Double currentMaxSlope;
 
     private VoiceAnnouncementUtils() {
     }
@@ -63,6 +64,14 @@ class VoiceAnnouncementUtils {
         return 10.0;
     }
 
+    private static double calculateAverageSlope(Distance totalDistance, Float altitudeGain, Float altitudeLoss) {
+        double avgSlope=0;
+        if (totalDistance!=null&&altitudeGain!=null&&altitudeLoss!=null){
+            avgSlope=(altitudeGain+altitudeLoss)/totalDistance.toM()*100;
+        }
+        return  avgSlope;
+    }
+
 
     static Spannable createIdle(Context context) {
         return new SpannableStringBuilder()
@@ -73,6 +82,10 @@ class VoiceAnnouncementUtils {
         SpannableStringBuilder builder = new SpannableStringBuilder();
         Speed maxSpeed = trackStatistics.getMaxSpeed();
         Speed avgSpeed = trackStatistics.getAverageSpeed();
+        Distance totalDistance = trackStatistics.getTotalDistance();
+        Float altitudeGain=trackStatistics.getTotalAltitudeGain();
+        Float altitudeLoss=trackStatistics.getTotalAltitudeLoss();
+
 
         int perUnitStringId;
         int distanceId;
@@ -149,7 +162,7 @@ class VoiceAnnouncementUtils {
 
 
         if (shouldVoiceAnnounceAveragesloperecording()) {
-            double avgSlope = CalculateAverageSlope();
+            double avgSlope=calculateAverageSlope(totalDistance,altitudeGain,altitudeLoss);
             if (!Double.isNaN(avgSlope)) {
                 builder.append(" ")
                         .append("Average slope")
@@ -162,15 +175,23 @@ class VoiceAnnouncementUtils {
     }
 
     private static void resetRunData(TrackStatistics trackStatistics){
+        double averageSlope= calculateAverageSlope(trackStatistics.getDistanceRun(),trackStatistics.getAltitudeRun(),0f);
+        if (currentMaxSlope==null || currentMaxSlope<averageSlope){
+            currentMaxSlope=averageSlope;
+        }
         trackStatistics.setMaximumSpeedPerRun(0);
+        trackStatistics.setDistanceRun(Distance.of(0));
+        trackStatistics.setAltitudeRun(0f);
     }
 
     static Spannable createRunStatistics(Context context, TrackStatistics trackStatistics, UnitSystem unitSystem) {
         SpannableStringBuilder builder = new SpannableStringBuilder();
-        //TODO: Once we get run data from other groups, we can announce run statistics instead of track statistics
         Distance totalDistance = trackStatistics.getTotalDistance();
         Speed averageMovingSpeed = trackStatistics.getAverageMovingSpeed();
         Float maxSpeed = trackStatistics.getMaximumSpeedPerRun();
+        double averageSlope= calculateAverageSlope(trackStatistics.getDistanceRun(),trackStatistics.getAltitudeRun(),0f);
+
+
         resetRunData(trackStatistics);
         int speedId;
         String unitSpeedTTS;
