@@ -70,6 +70,10 @@ public class TrackStatistics {
      private Float slopePercent_m;
      private Float maximumSpeedPerRun;
      private double averageSpeedPerRun;
+     private Distance distanceRun;
+
+
+    private Float altitudeRun;
 
 
 
@@ -134,6 +138,9 @@ public class TrackStatistics {
          averageSpeedPerRun=other.averageSpeedPerRun;
          totalChairliftWaitingTime=other.totalChairliftWaitingTime;
          endOfRunCounter=other.endOfRunCounter;
+         altitudeRun=other.altitudeRun;
+         distanceRun=other.totalDistance;
+
      }
 
 
@@ -209,6 +216,9 @@ public class TrackStatistics {
 
         totalChairliftWaitingTime = totalChairliftWaitingTime.plus(other.totalChairliftWaitingTime);
         endOfRunCounter+= other.endOfRunCounter;
+
+        altitudeRun += other.altitudeRun;
+        distanceRun = distanceRun.plus(other.distanceRun);
     }
 
     public boolean isInitialized() {
@@ -229,6 +239,10 @@ public class TrackStatistics {
 
         setTotalChairliftWaitingTime(Duration.ofSeconds(0));
         resetEndOfRunCounter();
+
+        altitudeRun = 0f;
+        setDistanceRun(Distance.of(0));
+
 
         isIdle = false;
     }
@@ -456,6 +470,33 @@ public class TrackStatistics {
          this.averageSpeedPerRun = speed;
 
      }
+
+    public Distance getDistanceRun() {
+        return distanceRun;
+    }
+
+    public void setDistanceRun(Distance distanceRun) {
+        this.distanceRun = distanceRun;
+    }
+
+    public Float getAltitudeRun() {
+        return altitudeRun;
+    }
+
+    public void setAltitudeRun(Float altitudeRun) {
+        this.altitudeRun = altitudeRun;
+    }
+
+    public void addAltitudeRun(float gain_m) {
+        if (altitudeRun == null) {
+            altitudeRun = 0f;
+        }
+        altitudeRun += gain_m;
+    }
+
+    public void addDistanceRun(Distance distance_m) {
+        distanceRun = distanceRun.plus(distance_m);
+    }
 
 
     // Method to calculate the total skiing duration for the current day

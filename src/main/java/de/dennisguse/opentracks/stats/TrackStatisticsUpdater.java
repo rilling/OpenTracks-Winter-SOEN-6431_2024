@@ -143,6 +143,7 @@ public class TrackStatisticsUpdater {
                     currentSegment.addTotalAltitudeGain((float) altitudeDifference);
                 }else{
                     currentSegment.addTotalAltitudeLoss(-(float) altitudeDifference);
+                    currentSegment.addAltitudeRun(-(float) altitudeDifference);
                 }
             }
 
@@ -173,6 +174,7 @@ public class TrackStatisticsUpdater {
             if (movingDistance != null) {
                 currentSegment.setIdle(false);
                 currentSegment.addTotalDistance(movingDistance);
+                currentSegment.addDistanceRun(movingDistance);
             }
 
             if (!currentSegment.isIdle() && !trackPoint.isSegmentManualStart()) {

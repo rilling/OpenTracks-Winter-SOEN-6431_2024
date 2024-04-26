@@ -40,6 +40,7 @@ import de.dennisguse.opentracks.stats.TrackStatistics;
 import de.dennisguse.opentracks.ui.intervals.IntervalStatistics;
 
 class VoiceAnnouncementUtils {
+    private static Double currentMaxSlope;
 
     private VoiceAnnouncementUtils() {
     }
@@ -174,15 +175,23 @@ class VoiceAnnouncementUtils {
     }
 
     private static void resetRunData(TrackStatistics trackStatistics){
+        double averageSlope= calculateAverageSlope(trackStatistics.getDistanceRun(),trackStatistics.getAltitudeRun(),0f);
+        if (currentMaxSlope==null || currentMaxSlope<averageSlope){
+            currentMaxSlope=averageSlope;
+        }
         trackStatistics.setMaximumSpeedPerRun(0);
+        trackStatistics.setDistanceRun(Distance.of(0));
+        trackStatistics.setAltitudeRun(0f);
     }
 
     static Spannable createRunStatistics(Context context, TrackStatistics trackStatistics, UnitSystem unitSystem) {
         SpannableStringBuilder builder = new SpannableStringBuilder();
-        //TODO: Once we get run data from other groups, we can announce run statistics instead of track statistics
         Distance totalDistance = trackStatistics.getTotalDistance();
         Speed averageMovingSpeed = trackStatistics.getAverageMovingSpeed();
         Float maxSpeed = trackStatistics.getMaximumSpeedPerRun();
+        double averageSlope= calculateAverageSlope(trackStatistics.getDistanceRun(),trackStatistics.getAltitudeRun(),0f);
+
+
         resetRunData(trackStatistics);
         int speedId;
         String unitSpeedTTS;
