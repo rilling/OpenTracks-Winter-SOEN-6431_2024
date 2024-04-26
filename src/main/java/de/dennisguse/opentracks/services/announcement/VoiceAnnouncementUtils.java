@@ -47,14 +47,6 @@ class VoiceAnnouncementUtils {
     private VoiceAnnouncementUtils() {
     }
 
-
-    static double calculateTimeSkied() {
-
-           return 0.0; 
-		   
-    }
-	
-
     static double calculateMaxSlope() {
 
         // This method should return the calculated maximum slope.
@@ -92,6 +84,7 @@ class VoiceAnnouncementUtils {
         Double temperature = fetchTempData();
 
 
+        Duration skiingTime = trackStatistics.getTotalTime().minus(trackStatistics.getTotalChairliftWaitingTime());
         Duration waitingTime = trackStatistics.getTotalChairliftWaitingTime();
     
 
@@ -192,8 +185,8 @@ class VoiceAnnouncementUtils {
 
         if (shouldVoiceAnnounceTotalWaitingTime()){
             long waitingTimeLong=waitingTime.toSeconds();
-            long waitingMinutes=waitingTimeLong%60;
-            long waitingSeconds=waitingTimeLong/60;
+            long waitingMinutes=waitingTimeLong/60;
+            long waitingSeconds=waitingTimeLong%60;
             builder.append(" ")
                     .append(context.getString(R.string.settings_announcements_total_waiting_time))
                     .append(": ");
@@ -202,6 +195,23 @@ class VoiceAnnouncementUtils {
             }
             if (waitingSeconds>0){
                 builder.append(waitingSeconds+" seconds ");
+            }
+            builder.append(".");
+        }
+
+        if (shouldVoiceAnnounceTimeSkiedRecording()) {
+            long skiingTimeLong=skiingTime.toSeconds();
+            long skiingMinutes=skiingTimeLong/60;
+            long skiingSeconds=skiingTimeLong%60;
+
+            builder.append(" ")
+                    .append(context.getString(R.string.settings_announcements_time_skied_recording))
+                    .append(": ");
+            if (skiingMinutes>0){
+                builder.append(skiingMinutes+" minutes ");
+            }
+            if (skiingSeconds>0){
+                builder.append(skiingSeconds+" seconds ");
             }
             builder.append(".");
         }
@@ -217,17 +227,25 @@ class VoiceAnnouncementUtils {
         trackStatistics.setMaximumSpeedPerRun(0);
         trackStatistics.setDistanceRun(Distance.of(0));
         trackStatistics.setAltitudeRun(0f);
+        trackStatistics.setTimeRun(Duration.ofSeconds(0));
     }
 
     static Spannable createRunStatistics(Context context, TrackStatistics trackStatistics, UnitSystem unitSystem) {
         SpannableStringBuilder builder = new SpannableStringBuilder();
-        Distance totalDistance = trackStatistics.getTotalDistance();
-        Speed averageMovingSpeed = trackStatistics.getAverageMovingSpeed();
+
+        Distance runDistance = trackStatistics.getDistanceRun();
+        Duration runTime = trackStatistics.getTimeRun();
+        Speed averageMovingSpeed= Speed.of(0);
+        if(runDistance!=null&& runTime!=null){
+            averageMovingSpeed = Speed.of(runDistance,runTime);
+        }
+
+
         Float maxSpeed = trackStatistics.getMaximumSpeedPerRun();
         double averageSlope= calculateAverageSlope(trackStatistics.getDistanceRun(),trackStatistics.getAltitudeRun(),0f);
 
-
         resetRunData(trackStatistics);
+
         int speedId;
         String unitSpeedTTS;
         switch (unitSystem) {
