@@ -22,6 +22,10 @@ import de.dennisguse.opentracks.data.models.TrackSegment;
 import de.dennisguse.opentracks.databinding.DaySpecificActivityItemBinding;
 import de.dennisguse.opentracks.ui.util.ActivityUtils;
 
+/**
+ * Adapter for displaying track segments in a RecyclerView for a specific day's activities.
+ * Also implements ActionMode.Callback for contextual action mode handling.
+ */
 public class DaySpecificAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ActionMode.Callback {
 
     private static final String TAG = DaySpecificAdapter.class.getSimpleName();
@@ -31,11 +35,22 @@ public class DaySpecificAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private final SparseBooleanArray selection = new SparseBooleanArray();
 
+    /**
+     * Cursor containing track segment data (optional, can be used instead of trackSegments).
+     */
     private Cursor cursor;
-
+    /**
+     * List of track segments to be displayed.
+     */
     private ActivityUtils.ContextualActionModeCallback actionModeCallback;
     private List<TrackSegment> trackSegments;
 
+    /**
+     * Constructor for the DaySpecificAdapter.
+     *
+     * @param context The activity context.
+     * @param recyclerView The RecyclerView where the adapter is attached.
+     */
     public DaySpecificAdapter(AppCompatActivity context, RecyclerView recyclerView) {
         this.context = context;
         this.recyclerView = recyclerView;
@@ -43,22 +58,22 @@ public class DaySpecificAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-        return false;
+        return false; // Implement this method for contextual action mode handling
     }
 
     @Override
     public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-        return false;
+        return false; // Implement this method for contextual action mode handling
     }
 
     @Override
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-        return false;
+        return false; // Implement this method for handling action item clicks in contextual action mode
     }
 
     @Override
     public void onDestroyActionMode(ActionMode mode) {
-
+        // Reset selection on action mode destroy
     }
 
     @NonNull
@@ -75,6 +90,11 @@ public class DaySpecificAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         viewHolder.bind(segment);
     }
 
+    /**
+     * Updates the adapter data with a new list of track segments.
+     *
+     * @param segments The new list of track segments to display.
+     */
     public void swapData(List<TrackSegment> segments) {
         this.trackSegments = segments;
         this.notifyDataSetChanged();
@@ -101,6 +121,11 @@ public class DaySpecificAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             view.setOnLongClickListener(this);
         }
 
+        /**
+         * Binds the track segment data to the view holder's UI elements.
+         *
+         * @param segment The TrackSegment object containing the data to display.
+         */
         public void bind(TrackSegment segment) {
             double speed = segment.getSpeed();
             String formattedSpeed = String.format("%.2f", speed);
@@ -117,20 +142,41 @@ public class DaySpecificAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             viewBinding.daySpecificActivityTime.setText(segment.getTotalTime().toMinutes() + " minutes");
         }
 
+        /**
+         * Sets the selected state of the view holder.
+         *
+         * @param isSelected True if the view holder should be selected, false otherwise.
+         */
         public void setSelected(boolean isSelected) {
             selection.put((int) getId(), isSelected);
             view.setActivated(isSelected);
         }
 
+        /**
+         * Retrieves the unique identifier of the associated track segment.
+         *
+         * @return The ID of the TrackSegment object.
+         */
         public long getId() {
             return trackId.id();
         }
 
+        /**
+         * Handles click events on the view holder. (implementation needed)
+         *
+         * @param view The view that was clicked.
+         */
         @Override
         public void onClick(View view) {
 
         }
 
+        /**
+         * Handles long click events on the view holder. (implementation needed)
+         *
+         * @param view The view that was long clicked.
+         * @return True if the event was consumed, false otherwise.
+         */
         @Override
         public boolean onLongClick(View view) {
             return false;
