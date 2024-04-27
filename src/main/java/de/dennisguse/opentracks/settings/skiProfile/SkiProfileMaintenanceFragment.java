@@ -1,30 +1,23 @@
-package de.dennisguse.opentracks.settings;
+package de.dennisguse.opentracks.settings.skiProfile;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.preference.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.Date;
 
-import de.dennisguse.opentracks.BuildConfig;
 import de.dennisguse.opentracks.R;
-import de.dennisguse.opentracks.data.tables.TracksColumns;
 
 public class SkiProfileMaintenanceFragment extends PreferenceFragmentCompat {
 
