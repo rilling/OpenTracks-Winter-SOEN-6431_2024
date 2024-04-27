@@ -22,7 +22,6 @@
             android:textSize="15sp"
             android:textStyle="bold" />
 
-        <!-- Row for Run -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -73,12 +72,9 @@
                 tools:text="36.3 km/h"/>
         </LinearLayout>
 
-        <!-- Bottom Line -->
         <View
             android:id="@+id/marker_list_item_bottom_line"
             style="@style/HorizontalLine"
-            android:layout_marginBottom="0dp"/>
-
-    </LinearLayout>
+            android:layout_marginBottom="4dp"/>  </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
