@@ -72,9 +72,7 @@
         <activity
             android:name=".ui.aggregatedStatistics.daySpecificStats.DaySpecificActivity"
             android:exported="false" />
-        <activity
-            android:name=".ui.aggregatedStatistics.daySpecificStats.DaySpecificActivity"
-            android:exported="false" />
+
         <activity
             android:name=".ui.aggregatedStatistics.SeasonStats.RunAndChairStatActivity"
             android:exported="false" />

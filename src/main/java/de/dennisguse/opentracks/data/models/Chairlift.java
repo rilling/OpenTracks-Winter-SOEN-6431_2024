@@ -101,7 +101,7 @@ public class Chairlift {
         // Add chairlift to valid chairlifts and mark track points as chairlift segment
         Chairlift validChairlift = new Chairlift(name, number, chairliftSpeed, liftType);
         validChairlifts.put(validChairlift.getId(), validChairlift);
-//        trackPoints.forEach(trackPoint -> trackPoint.setChairliftSegment(true));
+        trackPoints.forEach(trackPoint -> trackPoint.setChairliftSegment(true));
 
         return true;
     }

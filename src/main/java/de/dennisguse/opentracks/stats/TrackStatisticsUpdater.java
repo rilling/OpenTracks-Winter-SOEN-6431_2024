@@ -69,13 +69,13 @@ public class TrackStatisticsUpdater {
         resetAverageHeartRate();
     }
 
-    public TrackStatisticsUpdater(TrackStatisticsUpdater toCopy) {
-        this.currentSegment = new TrackStatistics(toCopy.currentSegment);
-        this.trackStatistics = new TrackStatistics(toCopy.trackStatistics);
-
-        this.lastTrackPoint = toCopy.lastTrackPoint;
-        resetAverageHeartRate();
-    }
+     public TrackStatisticsUpdater(TrackStatisticsUpdater toCopy) {
+         this.currentSegment = new TrackStatistics(toCopy.currentSegment);
+         this.trackStatistics = new TrackStatistics(toCopy.trackStatistics);
+         this.sessionManager = toCopy.sessionManager;
+         this.lastTrackPoint = toCopy.lastTrackPoint;
+         resetAverageHeartRate();
+     }
 
     public TrackStatistics getTrackStatistics() {
         // Take a snapshot - we don't want anyone messing with our trackStatistics
@@ -136,6 +136,12 @@ public class TrackStatisticsUpdater {
         // Always update time
         currentSegment.setStopTime(trackPoint.getTime());
         currentSegment.setTotalTime(Duration.between(currentSegment.getStartTime(), trackPoint.getTime()));
+        if(lastTrackPoint!=null){
+            Duration timeBetween=Duration.between(lastTrackPoint.getTime(),trackPoint.getTime());
+            currentSegment.setTimeRun(currentSegment.getTimeRun().plus(timeBetween));
+
+        }
+
 
         // Process sensor data: barometer
         if (trackPoint.hasAltitudeGain()) {
@@ -144,6 +150,17 @@ public class TrackStatisticsUpdater {
 
         if (trackPoint.hasAltitudeLoss()) {
             currentSegment.addTotalAltitudeLoss(trackPoint.getAltitudeLoss());
+        }
+
+        if (trackPoint.getSpeed()!=null){
+            double currentSpeed=trackPoint.getSpeed().toMPS();
+            if (currentSpeed > currentSegment.getMaximumSpeedPerRun().toMPS()){
+                currentSegment.setMaximumSpeedPerRun(((float) currentSpeed));
+            }
+        }
+        if (trackPoint.hasLocation()){
+            currentSegment.setLatitude(trackPoint.getLatitude());
+            currentSegment.setLongitude(trackPoint.getLongitude());
         }
 
         // this function will always be called for all trackpoints to check if it is waiting for chairlift
@@ -156,6 +173,18 @@ public class TrackStatisticsUpdater {
         //Update absolute (GPS-based) altitude
         if (trackPoint.hasAltitude()) {
             currentSegment.updateAltitudeExtremities(trackPoint.getAltitude());
+            if (lastTrackPoint!=null&&lastTrackPoint.hasAltitude()){
+                double altitude=trackPoint.getAltitude().toM();
+                double lastAltitude =lastTrackPoint.getAltitude().toM();
+                double altitudeDifference = altitude- lastAltitude;
+                if (altitudeDifference>0){
+                    currentSegment.addTotalAltitudeGain((float) altitudeDifference);
+                }else{
+                    currentSegment.addTotalAltitudeLoss(-(float) altitudeDifference);
+                    currentSegment.addAltitudeRun(-(float) altitudeDifference);
+                }
+            }
+
         }
 
         // Update heart rate
@@ -183,6 +212,7 @@ public class TrackStatisticsUpdater {
             if (movingDistance != null) {
                 currentSegment.setIdle(false);
                 currentSegment.addTotalDistance(movingDistance);
+                currentSegment.addDistanceRun(movingDistance);
             }
 
             if (!currentSegment.isIdle() && !trackPoint.isSegmentManualStart()) {
@@ -224,7 +254,7 @@ public class TrackStatisticsUpdater {
         // indicates altitude difference allowed in case of small change elevation change while waiting in queue for chairlift
         final float minimumAltitudeChangeAllowed = 0.2f;
         final float minimumDeviationAllowedFromLowestAltitude = 1f;
-        final int thresholdTrackpointsForNoMovement=5;
+        final int thresholdTrackpointsForNoMovement=1;
 
         float altitudeGain = trackPoint.hasAltitudeGain()? trackPoint.getAltitudeGain(): 0f;
         float altitudeLoss = trackPoint.hasAltitudeLoss()? trackPoint.getAltitudeLoss(): 0f;
@@ -295,17 +325,19 @@ public class TrackStatisticsUpdater {
         }
 
         // Slope = Change in Distance / Change in Altitude
-        Float slopePercentChangedBetweenPoints = (float) ((altituteChanged / distanceMoved.toM()) * 100);
+        Float slopePercentChangedBetweenPoints = 0f;
+        if (distanceMoved.toM() != 0)
+            slopePercentChangedBetweenPoints = (float) ((altituteChanged / distanceMoved.toM()) * 100);
         Float prevAggregatedSlopePercent = currentSegment.hasSlope() ? currentSegment.getSlopePercent() : 0;
         Float aggregatedSlopePercent = prevAggregatedSlopePercent + slopePercentChangedBetweenPoints;
         currentSegment.setSlopePercent(aggregatedSlopePercent);
     }
 
-    @NonNull
-    @Override
-    public String toString() {
-        return "TrackStatisticsUpdater{" +
-                "trackStatistics=" + trackStatistics +
-                '}';
-    }
-}
+     @NonNull
+     @Override
+     public String toString() {
+         return "TrackStatisticsUpdater{" +
+                 "trackStatistics=" + trackStatistics +
+                 '}';
+     }
+ }

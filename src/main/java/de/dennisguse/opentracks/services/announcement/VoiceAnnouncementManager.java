@@ -70,6 +70,8 @@ public class VoiceAnnouncementManager implements SharedPreferences.OnSharedPrefe
     private IntervalStatistics intervalStatistics;
     private Distance intervalDistance;
 
+    private int lastRunCount=0;
+
     public VoiceAnnouncementManager(@NonNull Context context) {
         this.context = context;
         contentProviderUtils = new ContentProviderUtils(context);
@@ -139,6 +141,21 @@ public class VoiceAnnouncementManager implements SharedPreferences.OnSharedPrefe
             return;
         }
 
+        int currentRunCount=track.getTrackStatistics().getEndOfRunCounter();
+        int lastRunCount=this.lastRunCount;
+        this.lastRunCount = currentRunCount;
+
+        // decide if it is the end of the run
+        if (currentRunCount <= lastRunCount){
+            return;
+        }
+
+        // return directly if not really moved
+        if (trackStatistics.getTotalDistance().toM()<=0.1){
+            return;
+        }
+
+
         boolean announce = false;
         this.trackStatistics = track.getTrackStatistics();
         if (trackStatistics.getTotalDistance().greaterThan(nextTotalDistance)) {
@@ -150,8 +167,11 @@ public class VoiceAnnouncementManager implements SharedPreferences.OnSharedPrefe
             announce = true;
         }
 
+        if (PreferencesUtils.shouldVoiceAnnounceMaxSpeedRun() && PreferencesUtils.shouldVoiceAnnounceAverageslopeRun()){
+            announce = true;
+        }
+
         if (announce) {
-            //TODO: Once we have run data from other groups, change the conditions to only call this if we're at the end of a run
             voiceAnnouncement.announce(VoiceAnnouncementUtils.createRunStatistics(context, track.getTrackStatistics(), PreferencesUtils.getUnitSystem()));
         }
     }

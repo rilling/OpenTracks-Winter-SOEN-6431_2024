@@ -530,6 +530,11 @@ public class PreferencesUtils {
     public static boolean shouldVoiceAnnounceAverageSpeedPace() {
         return getBoolean(R.string.voice_announce_average_speed_pace_key, true);
     }
+    public static boolean shouldVoiceAnnounceMaxSpeedRun() {
+        return getBoolean(R.string.voice_announce_max_speed_run_key, true);
+    }
+
+    
 
     @VisibleForTesting
     public static void setVoiceAnnounceAverageSpeedPace(boolean value) {
@@ -563,13 +568,15 @@ public class PreferencesUtils {
         setBoolean(R.string.voice_announce_average_heart_rate_key, value);
     }
 
-
-    public static boolean shouldVoiceAnnounceMaxSpeedRun() {
-        return getBoolean(R.string.voice_announce_max_speed_run_key, true);
+    public static boolean shouldVoiceAnnounceTemperature() {
+        return getBoolean(R.string.voice_announce_temperature_key, true);
     }
 
 
     @VisibleForTesting
+    public static void setVoiceAnnounceTemperature(boolean value) {
+        setBoolean(R.string.voice_announce_temperature_key, value);
+    }
     public static void setVoiceAnnounceMaxSpeedRun(boolean value) {
         setBoolean(R.string.voice_announce_max_speed_run_key, value);
     }
@@ -592,6 +599,16 @@ public class PreferencesUtils {
     public static void setVoiceAnnounceMaxSlope(boolean value) {
         setBoolean(R.string.voice_announce_max_slope_key, value);
     }
+
+    public static boolean shouldVoiceAnnounceTotalWaitingTime() {
+        return getBoolean(R.string.voice_announce_total_waiting_time_key, true);
+    }
+    
+    @VisibleForTesting
+    public static void setVoiceAnnounceTotalWaitingTime(boolean value) {
+        setBoolean(R.string.voice_announce_total_waiting_time_key, value);
+    }
+    
 
     // recoding related setting helper methods
     public static boolean shouldVoiceAnnounceMaxSpeedRecording() {

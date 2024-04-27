@@ -489,24 +489,26 @@ limitations under the License.
 
 
     <!-- Run RRelated Data -->
-    <string name="settings_announcements_average_slope_run">Average slope</string>
-    <string name="settings_announcements_max_speed_run">Max speed/run</string>
-    <string name="settings_announcements_run_average_speed">Run Average Speed</string>
+    <string name="settings_announcements_average_slope_run">Average slope</string>  
+    <string name="settings_announcements_max_speed_run">Max speed</string>
+    <string name="settings_announcements_run_average_speed">Average Speed</string>
+    <string name="settings_announcements_total_waiting_time">Total Waiting Time</string>
 
 
     <!-- Recording Related Data -->
-    <string name="settings_announcements_max_speed_recording">Max speed/recording</string>
+    <string name="settings_announcements_max_speed_recording">Max speed</string>
 
-    <string name="settings_announcements_time_skied_recording">Time skied/recording</string>
+	  <string name="settings_announcements_time_skied_recording">Time skied</string>
+    
 
 
-
-    <string name="settings_announcements_average_speed_recording">Average speed/recording</string>
+    <string name="settings_announcements_average_speed_recording">Average speed</string>
 
     <string name="settings_announcements_max_slope">Max slope</string>
     <string name="settings_announcements_average_slope_recording">Average slope</string>
 
 
+    <string name="settings_announcements_temperature">Temperature</string>
 
 
     <!-- Custom Layout -->

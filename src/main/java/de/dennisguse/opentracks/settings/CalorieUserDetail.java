@@ -1,6 +1,9 @@
 package de.dennisguse.opentracks.settings;
 
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,7 +23,7 @@ public class CalorieUserDetail {
     Track track;
 
     public String getActivityType(){
-        return track.getActivityType();
+        return track.getActivityType().toString();
     }
 
     TrackStatistics trackStatistics;
@@ -158,4 +161,5 @@ public class CalorieUserDetail {
         int years = period.getYears();
         return years;
     }
+
 }

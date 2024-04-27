@@ -15,14 +15,40 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import de.dennisguse.opentracks.data.models.WeatherInformation;
+//import de.dennisguse.opentracks.data.models.WeatherInformation;
 
 public class WeatherFetchService {
     public static final String API_KEY = "19fb6cae02984e348e314715240804";
     public static final String API_URL = "https://api.weatherapi.com/v1/current.json";
 
+//   @Nullable
+//   public static WeatherInformation fetchWeatherData(double latitudeDouble, double longitudeDouble) {
+//       try {
+//           String latitude = String.valueOf(latitudeDouble);
+//           String longitude = String.valueOf(longitudeDouble);
+//
+//           URL url = getURL(latitude, longitude);
+//
+//           HttpURLConnection connection = getHttpURLConnection(url);
+//
+//           StringBuilder result = getWeatherData(connection);
+//
+//           JSONObject current = getJsonConverter(result);
+//
+//           // Extract weather information
+//           double temperature = getTemperature(current);
+//
+//           return new WeatherInformation(temperature, windSpeed, humidity, windDirection);
+//
+//       } catch (IOException | JSONException e) {
+//           e.printStackTrace();
+//       }
+//
+//       return null;
+//   }
+
     @Nullable
-    public static WeatherInformation fetchWeatherData(double latitudeDouble, double longitudeDouble) {
+    public static double fetchTempData(double latitudeDouble, double longitudeDouble) {
         try {
             String latitude = String.valueOf(latitudeDouble);
             String longitude = String.valueOf(longitudeDouble);
@@ -41,13 +67,13 @@ public class WeatherFetchService {
             double humidity = getHumidity(current);
             String windDirection = getWindDirection(current);
 
-            return new WeatherInformation(temperature, windSpeed, humidity, windDirection);
+            return temperature;
 
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
 
-        return null;
+        return -1000;
     }
 
     private static JSONObject getJsonConverter(StringBuilder result) throws JSONException {
