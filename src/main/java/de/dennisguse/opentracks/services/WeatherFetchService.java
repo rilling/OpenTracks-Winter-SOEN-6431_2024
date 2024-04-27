@@ -21,31 +21,31 @@ public class WeatherFetchService {
     public static final String API_KEY = "19fb6cae02984e348e314715240804";
     public static final String API_URL = "https://api.weatherapi.com/v1/current.json";
 
-//    @Nullable
-//    public static WeatherInformation fetchWeatherData(double latitudeDouble, double longitudeDouble) {
-//        try {
-//            String latitude = String.valueOf(latitudeDouble);
-//            String longitude = String.valueOf(longitudeDouble);
-//
-//            URL url = getURL(latitude, longitude);
-//
-//            HttpURLConnection connection = getHttpURLConnection(url);
-//
-//            StringBuilder result = getWeatherData(connection);
-//
-//            JSONObject current = getJsonConverter(result);
-//
-//            // Extract weather information
-//            double temperature = getTemperature(current);
-//
-//            return new WeatherInformation(temperature);
-//
-//        } catch (IOException | JSONException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return null;
-//    }
+   @Nullable
+   public static WeatherInformation fetchWeatherData(double latitudeDouble, double longitudeDouble) {
+       try {
+           String latitude = String.valueOf(latitudeDouble);
+           String longitude = String.valueOf(longitudeDouble);
+
+           URL url = getURL(latitude, longitude);
+
+           HttpURLConnection connection = getHttpURLConnection(url);
+
+           StringBuilder result = getWeatherData(connection);
+
+           JSONObject current = getJsonConverter(result);
+
+           // Extract weather information
+           double temperature = getTemperature(current);
+
+           return new WeatherInformation(temperature, windSpeed, humidity, windDirection);
+
+       } catch (IOException | JSONException e) {
+           e.printStackTrace();
+       }
+
+       return null;
+   }
 
     @Nullable
     public static double fetchTempData(double latitudeDouble, double longitudeDouble) {
@@ -63,6 +63,9 @@ public class WeatherFetchService {
 
             // Extract weather information
             double temperature = getTemperature(current);
+            double windSpeed = getWindSpeed(current);
+            double humidity = getHumidity(current);
+            String windDirection = getWindDirection(current);
 
             return temperature;
 
@@ -83,6 +86,18 @@ public class WeatherFetchService {
         // Get the temperature in Celsius from the "current" object
         double temperatureC = current.getDouble("temp_c");
         return temperatureC;
+    }
+
+    private static double getHumidity(JSONObject current) throws JSONException {
+        return current.getDouble("humidity");
+    }
+
+    private static String getWindDirection(JSONObject current) throws JSONException {
+        return current.getString("wind_dir");
+    }
+
+    private static double getWindSpeed(JSONObject current) throws JSONException {
+        return current.getDouble("wind_kph");
     }
 
     private static StringBuilder getWeatherData(HttpURLConnection connection) throws IOException {

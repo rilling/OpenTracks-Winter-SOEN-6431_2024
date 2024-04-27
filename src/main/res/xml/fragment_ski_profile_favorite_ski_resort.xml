@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:title="@string/ski_profile_favorite_resort_ski_resort_title">
+
+    <PreferenceCategory
+        android:title="@string/ski_profile_favorite_resort_ski_resort_title">
+
+        <EditTextPreference
+            android:inputType="text"
+            android:key="@string/settings_ski_profile_name_key"
+            android:title="@string/settings_ski_profile_name"
+            app:useSimpleSummaryProvider="true"
+            app:summary="Enter your name"/>
+
+        <EditTextPreference
+            android:inputType="phone"
+            android:key="@string/settings_ski_profile_phone_key"
+            android:title="@string/settings_ski_profile_phone"
+            app:useSimpleSummaryProvider="true"
+            app:summary="Enter your phone number"/>
+
+        <EditTextPreference
+            android:inputType="text"
+            android:key="Country"
+            android:title="Country"
+            app:useSimpleSummaryProvider="true"
+            app:summary="Enter your country"/>
+
+        <EditTextPreference
+            android:inputType="text"
+            android:key="Province"
+            android:title="Province"
+            app:useSimpleSummaryProvider="true"
+            app:summary="Enter your province"/>
+
+        <ListPreference
+            android:defaultValue="ski_type"
+            android:entries="@array/ski_type"
+            android:entryValues="@array/ski_type"
+            android:key="ski_type"
+            android:title="Type of Skiing"
+            app:summary="Choose the type of skiing" />
+
+    </PreferenceCategory>
+</PreferenceScreen>

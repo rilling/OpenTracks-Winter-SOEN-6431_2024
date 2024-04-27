@@ -8,9 +8,7 @@ import de.dennisguse.opentracks.data.models.TrackPoint;
 import de.dennisguse.opentracks.data.models.Run;
 
 public class RunAnalyzer {
-    private RunAnalyzer() {
-    }
-
+    private RunAnalyzer() {}
 
     private static final double ELEVATION_THRESHOLD = 5; // Meters
     private static final double SPEED_THRESHOLD = 2;   // Meters per second
@@ -70,13 +68,13 @@ public class RunAnalyzer {
                 maxSpeed = (float) Math.max(maxSpeed, speed);
             }
 
-            run.setMaxSpeed(maxSpeed);
+            run.setMaxSpeed(Speed.of(maxSpeed));
         }
     }
 
     public static void calculateAvgSpeedStatistics(List<Run> runs) {
         double totalSpeed = 0;
-         double averageSpeed;
+        double averageSpeed;
         ArrayList<Speed> speedList = new ArrayList<>();
         for (Run run : runs) {
             List<TrackPoint> trackPoints = run.getTrackPoints();
@@ -88,10 +86,10 @@ public class RunAnalyzer {
 
             // Set ski run average speed
             averageSpeed = totalSpeed / speedList.size();
+            run.setAverageSpeed(Speed.of(averageSpeed));
         }
 
     }
-
-
 }
+
 

@@ -8,9 +8,8 @@ public class Run {
     private final String sessionId;
     private long startTime;
     private long endTime;
-    private double maxSpeed;
-    private double averageSpeed;
-
+    private Speed maxSpeed;
+    private Speed averageSpeed;
     private double distance; // Consider adding other relevant properties (e.g., elevation gain/loss)
     private final List<TrackPoint> trackPoints;
 
@@ -28,7 +27,7 @@ public class Run {
         return endTime;
     }
 
-    public double getMaxSpeed() {
+    public Speed getMaxSpeed() {
         return maxSpeed;
     }
 
@@ -49,7 +48,7 @@ public class Run {
         this.endTime = endTime;
     }
 
-    public void setMaxSpeed(float maxSpeed) {
+    public void setMaxSpeed(Speed maxSpeed) {
         this.maxSpeed = maxSpeed;
     }
 
@@ -60,14 +59,12 @@ public class Run {
     public void addTrackPoint(TrackPoint trackPoint) {
         this.trackPoints.add(trackPoint);
     }
-
-    public double getAverageSpeed() {
+    public Speed getAverageSpeed() {
         return averageSpeed;
     }
 
-    public void setAverageSpeed(double speed) {
+    public void setAverageSpeed(Speed speed) {
         this.averageSpeed = speed;
 
     }
-
 }
