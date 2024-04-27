@@ -24,6 +24,7 @@ import android.icu.text.MessageFormat;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.TtsSpan;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -47,11 +48,11 @@ class VoiceAnnouncementUtils {
     private VoiceAnnouncementUtils() {
     }
 
-    static double calculateMaxSlope(Float altitudeGain, Float altitudeLoss) {
+    static double calculateMaxSlope() {
         // This method should return the calculated maximum slope.
-        double maxSlope = 0;
-        if (altitudeGain != null && altitudeLoss != null) {
-            maxSlope = Math.max(altitudeGain, altitudeLoss);
+        double maxSlope = currentMaxSlope;
+        if (currentMaxSlope==null){
+            return 0;
         }
         return maxSlope;
     }
@@ -131,7 +132,8 @@ class VoiceAnnouncementUtils {
         }
 
         if (shouldVoiceAnnounceMaxSlope()) {
-            double maxSlope = calculateMaxSlope(altitudeGain,altitudeLoss); // Calculate the maximum slope based on elevation data
+            double maxSlope = calculateMaxSlope(); // Calculate the maximum slope based on elevation data
+            Log.i("MaxSlope",maxSlope+"");
             if (!Double.isNaN(maxSlope)) {
                 builder.append(" ")
                         .append(context.getString(R.string.settings_announcements_max_slope))
@@ -223,7 +225,7 @@ class VoiceAnnouncementUtils {
 
     private static void resetRunData(TrackStatistics trackStatistics){
         double averageSlope= calculateAverageSlope(trackStatistics.getDistanceRun(),trackStatistics.getAltitudeRun(),0f);
-        if (currentMaxSlope==null || currentMaxSlope<averageSlope){
+        if (currentMaxSlope==null || Double.isNaN(currentMaxSlope) || currentMaxSlope<averageSlope){
             currentMaxSlope=averageSlope;
         }
         trackStatistics.setMaximumSpeedPerRun(0);
