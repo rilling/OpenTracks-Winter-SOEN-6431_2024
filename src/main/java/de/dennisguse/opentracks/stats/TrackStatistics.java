@@ -72,8 +72,8 @@ public class TrackStatistics {
 
      // Slope % between this point and the previous point
      private Float slopePercent_m;
-     private Float maximumSpeedPerRun;
-     private double averageSpeedPerRun;
+     private Speed maximumSpeedPerRun;
+     private Speed averageSpeedPerRun;
      private Distance distanceRun;
 
 
@@ -232,7 +232,7 @@ public class TrackStatistics {
         totalChairliftWaitingTime = totalChairliftWaitingTime.plus(other.totalChairliftWaitingTime);
         endOfRunCounter+= other.endOfRunCounter;
 
-        if (other.maximumSpeedPerRun!=null&&other.maximumSpeedPerRun>maximumSpeedPerRun){
+        if (other.maximumSpeedPerRun!=null&&other.maximumSpeedPerRun.toKMH()>maximumSpeedPerRun.toKMH()){
             maximumSpeedPerRun=other.maximumSpeedPerRun;
         }
 
@@ -502,13 +502,13 @@ public class TrackStatistics {
 
     public void setMaximumSpeedPerRun(float maximumSpeedPerRun) {
         Log.d("setSpeed",""+maximumSpeedPerRun);
-        this.maximumSpeedPerRun = maximumSpeedPerRun;
+        this.maximumSpeedPerRun = Speed.of(maximumSpeedPerRun);
     }
 
     
 
     public void setAverageSpeedPerRun(double speed) {
-        this.averageSpeedPerRun = speed;
+        this.averageSpeedPerRun = Speed.of(speed);
 
     }
 

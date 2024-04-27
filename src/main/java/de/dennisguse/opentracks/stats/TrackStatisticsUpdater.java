@@ -154,7 +154,7 @@ public class TrackStatisticsUpdater {
 
         if (trackPoint.getSpeed()!=null){
             double currentSpeed=trackPoint.getSpeed().toMPS();
-            if (currentSpeed > currentSegment.getMaximumSpeedPerRun()){
+            if (currentSpeed > currentSegment.getMaximumSpeedPerRun().toMPS()){
                 currentSegment.setMaximumSpeedPerRun(((float) currentSpeed));
             }
         }

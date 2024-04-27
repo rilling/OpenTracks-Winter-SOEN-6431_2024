@@ -223,7 +223,7 @@ class VoiceAnnouncementUtils {
     static Spannable createRunStatistics(Context context, TrackStatistics trackStatistics, UnitSystem unitSystem) {
         SpannableStringBuilder builder = new SpannableStringBuilder();
         Speed averageMovingSpeed = trackStatistics.getAverageMovingSpeed();
-        Float maxSpeed = trackStatistics.getMaximumSpeedPerRun();
+        Double maxSpeed = trackStatistics.getMaximumSpeedPerRun().toMPS();
         double averageSlope= calculateAverageSlope(trackStatistics.getDistanceRun(),trackStatistics.getAltitudeRun(),0f);
 
         Distance runDistance = trackStatistics.getDistanceRun();

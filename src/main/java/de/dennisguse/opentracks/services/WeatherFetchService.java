@@ -21,31 +21,31 @@ public class WeatherFetchService {
     public static final String API_KEY = "19fb6cae02984e348e314715240804";
     public static final String API_URL = "https://api.weatherapi.com/v1/current.json";
 
-   @Nullable
-   public static WeatherInformation fetchWeatherData(double latitudeDouble, double longitudeDouble) {
-       try {
-           String latitude = String.valueOf(latitudeDouble);
-           String longitude = String.valueOf(longitudeDouble);
-
-           URL url = getURL(latitude, longitude);
-
-           HttpURLConnection connection = getHttpURLConnection(url);
-
-           StringBuilder result = getWeatherData(connection);
-
-           JSONObject current = getJsonConverter(result);
-
-           // Extract weather information
-           double temperature = getTemperature(current);
-
-           return new WeatherInformation(temperature, windSpeed, humidity, windDirection);
-
-       } catch (IOException | JSONException e) {
-           e.printStackTrace();
-       }
-
-       return null;
-   }
+//   @Nullable
+//   public static WeatherInformation fetchWeatherData(double latitudeDouble, double longitudeDouble) {
+//       try {
+//           String latitude = String.valueOf(latitudeDouble);
+//           String longitude = String.valueOf(longitudeDouble);
+//
+//           URL url = getURL(latitude, longitude);
+//
+//           HttpURLConnection connection = getHttpURLConnection(url);
+//
+//           StringBuilder result = getWeatherData(connection);
+//
+//           JSONObject current = getJsonConverter(result);
+//
+//           // Extract weather information
+//           double temperature = getTemperature(current);
+//
+//           return new WeatherInformation(temperature, windSpeed, humidity, windDirection);
+//
+//       } catch (IOException | JSONException e) {
+//           e.printStackTrace();
+//       }
+//
+//       return null;
+//   }
 
     @Nullable
     public static double fetchTempData(double latitudeDouble, double longitudeDouble) {

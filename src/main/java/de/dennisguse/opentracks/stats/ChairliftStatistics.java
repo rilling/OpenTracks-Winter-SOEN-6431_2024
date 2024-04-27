@@ -9,6 +9,6 @@ public class ChairliftStatistics extends Chairlift{
     }
 
     public double getChairliftSpeed(){
-        return super.getChairliftSpeed();
+        return super.getchairliftSpeed();
     }
 }
