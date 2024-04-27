@@ -66,11 +66,14 @@ public class TrackStatistics {
 
     private boolean isIdle;
 
-     // Slope % between this point and the previous point
-     private Float slopePercent_m;
-     private Float maximumSpeedPerRun;
-     private double averageSpeedPerRun;
-	 private Float AverageslopePerRun;
+    // Slope % between this point and the previous point
+    private Float slopePercent_m;
+    private Float maximumSpeedPerRun;
+    private double averageSpeedPerRun;
+    private Distance distanceRun;
+
+
+    private Float altitudeRun;
 
 
 
@@ -100,7 +103,7 @@ public class TrackStatistics {
         return this.endOfRunCounter;
     }
     public void incrementEndOfRunCounter() {
-         this.endOfRunCounter++;
+        this.endOfRunCounter++;
         Log.d("EndCounter", this.endOfRunCounter+"");
     }
 
@@ -113,29 +116,32 @@ public class TrackStatistics {
         reset();
     }
 
-     /**
-      * Copy constructor.
-      *
-      * @param other another statistics data object to copy from
-      */
-     public TrackStatistics(TrackStatistics other) {
-         startTime = other.startTime;
-         stopTime = other.stopTime;
-         totalDistance = other.totalDistance;
-         totalTime = other.totalTime;
-         movingTime = other.movingTime;
-         maxSpeed = other.maxSpeed;
-         altitudeExtremities.set(other.altitudeExtremities.getMin(), other.altitudeExtremities.getMax());
-         totalAltitudeGain_m = other.totalAltitudeGain_m;
-         totalAltitudeLoss_m = other.totalAltitudeLoss_m;
-         avgHeartRate = other.avgHeartRate;
-         isIdle = other.isIdle;
-         slopePercent_m = other.slopePercent_m;
-         maximumSpeedPerRun = other.maximumSpeedPerRun;
-         averageSpeedPerRun=other.averageSpeedPerRun;
-         totalChairliftWaitingTime=other.totalChairliftWaitingTime;
-         endOfRunCounter=other.endOfRunCounter;
-     }
+    /**
+     * Copy constructor.
+     *
+     * @param other another statistics data object to copy from
+     */
+    public TrackStatistics(TrackStatistics other) {
+        startTime = other.startTime;
+        stopTime = other.stopTime;
+        totalDistance = other.totalDistance;
+        totalTime = other.totalTime;
+        movingTime = other.movingTime;
+        maxSpeed = other.maxSpeed;
+        altitudeExtremities.set(other.altitudeExtremities.getMin(), other.altitudeExtremities.getMax());
+        totalAltitudeGain_m = other.totalAltitudeGain_m;
+        totalAltitudeLoss_m = other.totalAltitudeLoss_m;
+        avgHeartRate = other.avgHeartRate;
+        isIdle = other.isIdle;
+        slopePercent_m = other.slopePercent_m;
+        maximumSpeedPerRun = other.maximumSpeedPerRun;
+        averageSpeedPerRun=other.averageSpeedPerRun;
+        totalChairliftWaitingTime=other.totalChairliftWaitingTime;
+        endOfRunCounter=other.endOfRunCounter;
+        altitudeRun=other.altitudeRun;
+        distanceRun=other.totalDistance;
+
+    }
 
 
     @VisibleForTesting
@@ -210,6 +216,9 @@ public class TrackStatistics {
 
         totalChairliftWaitingTime = totalChairliftWaitingTime.plus(other.totalChairliftWaitingTime);
         endOfRunCounter+= other.endOfRunCounter;
+
+        altitudeRun += other.altitudeRun;
+        distanceRun = distanceRun.plus(other.distanceRun);
     }
 
     public boolean isInitialized() {
@@ -230,6 +239,10 @@ public class TrackStatistics {
 
         setTotalChairliftWaitingTime(Duration.ofSeconds(0));
         resetEndOfRunCounter();
+
+        altitudeRun = 0f;
+        setDistanceRun(Distance.of(0));
+
 
         isIdle = false;
     }
@@ -434,41 +447,56 @@ public class TrackStatistics {
         this.slopePercent_m = slopePercent;
     }
 
-     public boolean hasSlope() {
-         return  slopePercent_m != null;
-     }
-     public float getMaximumSpeedPerRun() {
+    public boolean hasSlope() {
+        return  slopePercent_m != null;
+    }
+    public float getMaximumSpeedPerRun() {
         Log.d("getSpeed",""+maximumSpeedPerRun);
         if (maximumSpeedPerRun!=null)
             return maximumSpeedPerRun;
         return 0;
-     }
+    }
 
-     public void setMaximumSpeedPerRun(float maximumSpeedPerRun) {
-         Log.d("setSpeed",""+maximumSpeedPerRun);
-         this.maximumSpeedPerRun = maximumSpeedPerRun;
-     }
-	 
-	 public float getAverageslopePerRun() {
-        
-        if (AverageslopePerRun!=null)
-            return AverageslopePerRun;
-        return 0;
-     }
+    public void setMaximumSpeedPerRun(float maximumSpeedPerRun) {
+        Log.d("setSpeed",""+maximumSpeedPerRun);
+        this.maximumSpeedPerRun = maximumSpeedPerRun;
+    }
 
-     public void setAverageslopePerRun(float AverageslopePerRun) {
-         Log.d("setSlope",""+AverageslopePerRun);
-         this.AverageslopePerRun = AverageslopePerRun;
-     }
+    public double getAverageSpeedPerRun() {
+        return averageSpeedPerRun;
+    }
 
-     public double getAverageSpeedPerRun() {
-         return averageSpeedPerRun;
-     }
+    public void setAverageSpeedPerRun(double speed) {
+        this.averageSpeedPerRun = speed;
 
-     public void setAverageSpeedPerRun(double speed) {
-         this.averageSpeedPerRun = speed;
+    }
 
-     }
+    public Distance getDistanceRun() {
+        return distanceRun;
+    }
+
+    public void setDistanceRun(Distance distanceRun) {
+        this.distanceRun = distanceRun;
+    }
+
+    public Float getAltitudeRun() {
+        return altitudeRun;
+    }
+
+    public void setAltitudeRun(Float altitudeRun) {
+        this.altitudeRun = altitudeRun;
+    }
+
+    public void addAltitudeRun(float gain_m) {
+        if (altitudeRun == null) {
+            altitudeRun = 0f;
+        }
+        altitudeRun += gain_m;
+    }
+
+    public void addDistanceRun(Distance distance_m) {
+        distanceRun = distanceRun.plus(distance_m);
+    }
 
 
     // Method to calculate the total skiing duration for the current day
@@ -530,17 +558,17 @@ public class TrackStatistics {
         return toString().equals(o.toString());
     }
 
-     @NonNull
-     @Override
-     public String toString() {
-         return "TrackStatistics { Start Time: " + getStartTime() + "; Stop Time: " + getStopTime()
-                 + "; Total Distance: " + getTotalDistance() + "; Total Time: " + getTotalTime()
-                 + "; Moving Time: " + getMovingTime() + "; Max Speed: " + getMaxSpeed()
-                 + "; Maximum Speed Per Run: " + getMaximumSpeedPerRun()
-                 + "; Average Speed Per Run: " + getAverageSpeedPerRun()
-                 + "; Min Altitude: " + getMinAltitude() + "; Max Altitude: " + getMaxAltitude()
-                 + "; Altitude Gain: " + getTotalAltitudeGain()
-                 + "; Altitude Loss: " + getTotalAltitudeLoss()
-                 + "; Slope%: " + getSlopePercent() + "}";
-     }
- }
+    @NonNull
+    @Override
+    public String toString() {
+        return "TrackStatistics { Start Time: " + getStartTime() + "; Stop Time: " + getStopTime()
+                + "; Total Distance: " + getTotalDistance() + "; Total Time: " + getTotalTime()
+                + "; Moving Time: " + getMovingTime() + "; Max Speed: " + getMaxSpeed()
+                + "; Maximum Speed Per Run: " + getMaximumSpeedPerRun()
+                + "; Average Speed Per Run: " + getAverageSpeedPerRun()
+                + "; Min Altitude: " + getMinAltitude() + "; Max Altitude: " + getMaxAltitude()
+                + "; Altitude Gain: " + getTotalAltitudeGain()
+                + "; Altitude Loss: " + getTotalAltitudeLoss()
+                + "; Slope%: " + getSlopePercent() + "}";
+    }
+}
