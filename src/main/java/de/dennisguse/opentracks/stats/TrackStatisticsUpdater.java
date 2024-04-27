@@ -21,7 +21,7 @@ import androidx.annotation.NonNull;
 import java.time.Duration;
 import java.util.List;
 
- import de.dennisguse.opentracks.data.models.Distance;
+import de.dennisguse.opentracks.data.models.Distance;
  import de.dennisguse.opentracks.data.models.HeartRate;
  import de.dennisguse.opentracks.data.models.Speed;
  import de.dennisguse.opentracks.data.models.TrackPoint;
@@ -109,6 +109,12 @@ public class TrackStatisticsUpdater {
         // Always update time
         currentSegment.setStopTime(trackPoint.getTime());
         currentSegment.setTotalTime(Duration.between(currentSegment.getStartTime(), trackPoint.getTime()));
+        if(lastTrackPoint!=null){
+            Duration timeBetween=Duration.between(lastTrackPoint.getTime(),trackPoint.getTime());
+            currentSegment.setTimeRun(currentSegment.getTimeRun().plus(timeBetween));
+
+        }
+
 
         // Process sensor data: barometer
         if (trackPoint.hasAltitudeGain()) {
@@ -121,10 +127,15 @@ public class TrackStatisticsUpdater {
 
         if (trackPoint.getSpeed()!=null){
             double currentSpeed=trackPoint.getSpeed().toMPS();
-            if (currentSpeed > trackStatistics.getMaximumSpeedPerRun()){
-                trackStatistics.setMaximumSpeedPerRun(((float) currentSpeed));
+            if (currentSpeed > currentSegment.getMaximumSpeedPerRun()){
+                currentSegment.setMaximumSpeedPerRun(((float) currentSpeed));
             }
         }
+        if (trackPoint.hasLocation()){
+            currentSegment.setLatitude(trackPoint.getLatitude());
+            currentSegment.setLongitude(trackPoint.getLongitude());
+        }
+
         // this function will always be called for all trackpoints to check if it is waiting for chairlift
         // and also modify values for the check according to current trackpoint.
         if (isWaitingForChairlift(trackPoint)){
@@ -214,7 +225,7 @@ public class TrackStatisticsUpdater {
         // indicates altitude difference allowed in case of small change elevation change while waiting in queue for chairlift
         final float minimumAltitudeChangeAllowed = 0.2f;
         final float minimumDeviationAllowedFromLowestAltitude = 1f;
-        final int thresholdTrackpointsForNoMovement=5;
+        final int thresholdTrackpointsForNoMovement=1;
 
         float altitudeGain = trackPoint.hasAltitudeGain()? trackPoint.getAltitudeGain(): 0f;
         float altitudeLoss = trackPoint.hasAltitudeLoss()? trackPoint.getAltitudeLoss(): 0f;

@@ -12,10 +12,11 @@ import static de.dennisguse.opentracks.settings.PreferencesUtils.shouldVoiceAnno
 import static de.dennisguse.opentracks.settings.PreferencesUtils.shouldVoiceAnnounceRunAverageSpeed;
 import static de.dennisguse.opentracks.settings.PreferencesUtils.shouldVoiceAnnounceMaxSlope;
 import static de.dennisguse.opentracks.settings.PreferencesUtils.shouldVoiceAnnounceAveragesloperecording;
+import static de.dennisguse.opentracks.settings.PreferencesUtils.shouldVoiceAnnounceTemperature;
 import static de.dennisguse.opentracks.settings.PreferencesUtils.shouldVoiceAnnounceMaxSpeedRecording;
-import static de.dennisguse.opentracks.settings.PreferencesUtils.shouldVoiceAnnounceTimeSkiedRecording;
 import static de.dennisguse.opentracks.settings.PreferencesUtils.shouldVoiceAnnounceAverageSpeedRecording;
 import static de.dennisguse.opentracks.settings.PreferencesUtils.shouldVoiceAnnounceAverageslopeRun;
+import static de.dennisguse.opentracks.settings.PreferencesUtils.shouldVoiceAnnounceTotalWaitingTime;
 
 
 import android.content.Context;
@@ -38,6 +39,8 @@ import de.dennisguse.opentracks.settings.UnitSystem;
 import de.dennisguse.opentracks.stats.SensorStatistics;
 import de.dennisguse.opentracks.stats.TrackStatistics;
 import de.dennisguse.opentracks.ui.intervals.IntervalStatistics;
+import de.dennisguse.opentracks.services.WeatherFetchService;
+
 
 class VoiceAnnouncementUtils {
     private static Double currentMaxSlope;
@@ -45,24 +48,28 @@ class VoiceAnnouncementUtils {
     private VoiceAnnouncementUtils() {
     }
 
-
-    static double calculateTimeSkied() {
-
-        return 0.0;
-
-    }
-
-
     static double calculateMaxSlope() {
-
         // This method should return the calculated maximum slope.
-        return 0.0;
+        double maxSlope = currentMaxSlope;
+        if (currentMaxSlope==null){
+            return 0;
+        }
+        return maxSlope;
     }
 
     static double CalculateAverageSlope() {
         // This is dummy methods to fetch or calculate the average slope.
         return 10.0;
     }
+
+    private static double calculateAverageSlope(Distance totalDistance, Float altitudeGain, Float altitudeLoss) {
+        double avgSlope=0;
+        if (totalDistance!=null&&altitudeGain!=null&&altitudeLoss!=null){
+            avgSlope=(altitudeGain+altitudeLoss)/totalDistance.toM()*100;
+        }
+        return  avgSlope;
+    }
+
 
     private static double calculateAverageSlope(Distance totalDistance, Float altitudeGain, Float altitudeLoss) {
         double avgSlope=0;
@@ -85,7 +92,12 @@ class VoiceAnnouncementUtils {
         Distance totalDistance = trackStatistics.getTotalDistance();
         Float altitudeGain=trackStatistics.getTotalAltitudeGain();
         Float altitudeLoss=trackStatistics.getTotalAltitudeLoss();
+        Double temperature = WeatherFetchService.fetchTempData(trackStatistics.getLatitude(),trackStatistics.getLongitude());
 
+
+        Duration skiingTime = trackStatistics.getTotalTime().minus(trackStatistics.getTotalChairliftWaitingTime());
+        Duration waitingTime = trackStatistics.getTotalChairliftWaitingTime();
+    
 
         int perUnitStringId;
         int distanceId;
@@ -129,6 +141,7 @@ class VoiceAnnouncementUtils {
 
         if (shouldVoiceAnnounceMaxSlope()) {
             double maxSlope = calculateMaxSlope(); // Calculate the maximum slope based on elevation data
+            Log.i("MaxSlope",maxSlope+"");
             if (!Double.isNaN(maxSlope)) {
                 builder.append(" ")
                         .append(context.getString(R.string.settings_announcements_max_slope))
@@ -137,6 +150,7 @@ class VoiceAnnouncementUtils {
                         .append(".");
             }
         }
+        
 
         if (shouldVoiceAnnounceAverageSpeedRecording()) {
 
@@ -150,7 +164,7 @@ class VoiceAnnouncementUtils {
 
 
         if (shouldVoiceAnnounceTimeSkiedRecording()) {
-            double timeSkied = calculateTimeSkied(); // Calculate the maximum slope based on elevation data
+            double timeSkied = skiingTime.toSeconds(); // Calculate the maximum slope based on elevation data
             if (!Double.isNaN(timeSkied)) {
                 builder.append(" ")
                         .append(context.getString(R.string.settings_announcements_time_skied_recording))
@@ -159,7 +173,16 @@ class VoiceAnnouncementUtils {
                         .append(".");
             }
         }
-
+        if(shouldVoiceAnnounceTemperature()){
+             
+            if (!Double.isNaN(temperature)) {
+                builder.append(" ")
+                        .append(context.getString(R.string.settings_announcements_temperature))
+                        .append(": ")
+                        .append(String.format("%.2f%%", temperature)) // Format the slope value
+                        .append(".");
+            }
+        }
 
         if (shouldVoiceAnnounceAveragesloperecording()) {
             double avgSlope=calculateAverageSlope(totalDistance,altitudeGain,altitudeLoss);
@@ -171,17 +194,52 @@ class VoiceAnnouncementUtils {
                         .append(".");
             }
         }
+
+        if (shouldVoiceAnnounceTotalWaitingTime()){
+            long waitingTimeLong=waitingTime.toSeconds();
+            long waitingMinutes=waitingTimeLong/60;
+            long waitingSeconds=waitingTimeLong%60;
+            builder.append(" ")
+                    .append(context.getString(R.string.settings_announcements_total_waiting_time))
+                    .append(": ");
+            if (waitingMinutes>0){
+                builder.append(waitingMinutes+" minutes ");
+            }
+            if (waitingSeconds>0){
+                builder.append(waitingSeconds+" seconds ");
+            }
+            builder.append(".");
+        }
+
+        if (shouldVoiceAnnounceTimeSkiedRecording()) {
+            long skiingTimeLong=skiingTime.toSeconds();
+            long skiingMinutes=skiingTimeLong/60;
+            long skiingSeconds=skiingTimeLong%60;
+
+            builder.append(" ")
+                    .append(context.getString(R.string.settings_announcements_time_skied_recording))
+                    .append(": ");
+            if (skiingMinutes>0){
+                builder.append(skiingMinutes+" minutes ");
+            }
+            if (skiingSeconds>0){
+                builder.append(skiingSeconds+" seconds ");
+            }
+            builder.append(".");
+        }
+
         return builder;
     }
 
     private static void resetRunData(TrackStatistics trackStatistics){
         double averageSlope= calculateAverageSlope(trackStatistics.getDistanceRun(),trackStatistics.getAltitudeRun(),0f);
-        if (currentMaxSlope==null || currentMaxSlope<averageSlope){
+        if (currentMaxSlope==null || Double.isNaN(currentMaxSlope) || currentMaxSlope<averageSlope){
             currentMaxSlope=averageSlope;
         }
         trackStatistics.setMaximumSpeedPerRun(0);
         trackStatistics.setDistanceRun(Distance.of(0));
         trackStatistics.setAltitudeRun(0f);
+        trackStatistics.setTimeRun(Duration.ofSeconds(0));
     }
 
     static Spannable createRunStatistics(Context context, TrackStatistics trackStatistics, UnitSystem unitSystem) {
@@ -191,8 +249,17 @@ class VoiceAnnouncementUtils {
         Float maxSpeed = trackStatistics.getMaximumSpeedPerRun();
         double averageSlope= calculateAverageSlope(trackStatistics.getDistanceRun(),trackStatistics.getAltitudeRun(),0f);
 
+        Distance runDistance = trackStatistics.getDistanceRun();
+        Duration runTime = trackStatistics.getTimeRun();
+        
+        if(runDistance!=null&& runTime!=null){
+            averageMovingSpeed = Speed.of(runDistance,runTime);
+        }
+
+
 
         resetRunData(trackStatistics);
+
         int speedId;
         String unitSpeedTTS;
         switch (unitSystem) {

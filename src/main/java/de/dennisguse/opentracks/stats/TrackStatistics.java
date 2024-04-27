@@ -66,14 +66,22 @@ public class TrackStatistics {
 
     private boolean isIdle;
 
-    // Slope % between this point and the previous point
-    private Float slopePercent_m;
-    private Float maximumSpeedPerRun;
-    private double averageSpeedPerRun;
-    private Distance distanceRun;
+     // Slope % between this point and the previous point
+     private Float slopePercent_m;
+     private Float maximumSpeedPerRun;
+     private double averageSpeedPerRun;
+     private Distance distanceRun;
 
 
     private Float altitudeRun;
+
+    private Duration timeRun;
+
+    private Double latitude;
+
+
+
+    private Double longitude;
 
 
 
@@ -117,10 +125,10 @@ public class TrackStatistics {
     }
 
     /**
-     * Copy constructor.
-     *
-     * @param other another statistics data object to copy from
-     */
+      * Copy constructor.
+      *
+      * @param other another statistics data object to copy from
+      */
     public TrackStatistics(TrackStatistics other) {
         startTime = other.startTime;
         stopTime = other.stopTime;
@@ -140,7 +148,9 @@ public class TrackStatistics {
         endOfRunCounter=other.endOfRunCounter;
         altitudeRun=other.altitudeRun;
         distanceRun=other.totalDistance;
-
+        timeRun=other.timeRun;
+        latitude=other.latitude;
+        longitude=other.longitude;
     }
 
 
@@ -217,8 +227,19 @@ public class TrackStatistics {
         totalChairliftWaitingTime = totalChairliftWaitingTime.plus(other.totalChairliftWaitingTime);
         endOfRunCounter+= other.endOfRunCounter;
 
+        if (other.maximumSpeedPerRun!=null&&other.maximumSpeedPerRun>maximumSpeedPerRun){
+            maximumSpeedPerRun=other.maximumSpeedPerRun;
+        }
+
         altitudeRun += other.altitudeRun;
         distanceRun = distanceRun.plus(other.distanceRun);
+        timeRun= timeRun.plus(other.timeRun);
+        if(other.longitude!=null){
+            longitude=other.longitude;
+        }
+        if(other.latitude!=null){
+            latitude=other.latitude;
+        }
     }
 
     public boolean isInitialized() {
@@ -240,8 +261,12 @@ public class TrackStatistics {
         setTotalChairliftWaitingTime(Duration.ofSeconds(0));
         resetEndOfRunCounter();
 
+        setMaximumSpeedPerRun(0f);
+
         altitudeRun = 0f;
         setDistanceRun(Distance.of(0));
+
+        setTimeRun(Duration.ofSeconds(0));
 
 
         isIdle = false;
@@ -496,6 +521,31 @@ public class TrackStatistics {
 
     public void addDistanceRun(Distance distance_m) {
         distanceRun = distanceRun.plus(distance_m);
+    }
+
+    public Duration getTimeRun() {
+        return timeRun;
+    }
+
+    public void setTimeRun(Duration timeRun) {
+        this.timeRun = timeRun;
+        Log.d("timeRun",this.timeRun.getSeconds()+"");
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 
 
