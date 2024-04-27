@@ -57,18 +57,6 @@ class VoiceAnnouncementUtils {
         return maxSlope;
     }
 
-    static double CalculateAverageSlope() {
-        // This is dummy methods to fetch or calculate the average slope.
-        return 10.0;
-    }
-
-    private static double calculateAverageSlope(Distance totalDistance, Float altitudeGain, Float altitudeLoss) {
-        double avgSlope=0;
-        if (totalDistance!=null&&altitudeGain!=null&&altitudeLoss!=null){
-            avgSlope=(altitudeGain+altitudeLoss)/totalDistance.toM()*100;
-        }
-        return  avgSlope;
-    }
 
 
     private static double calculateAverageSlope(Distance totalDistance, Float altitudeGain, Float altitudeLoss) {
@@ -179,8 +167,8 @@ class VoiceAnnouncementUtils {
                 builder.append(" ")
                         .append(context.getString(R.string.settings_announcements_temperature))
                         .append(": ")
-                        .append(String.format("%.2f%%", temperature)) // Format the slope value
-                        .append(".");
+                        .append(String.format("%.2f", temperature)) // Format the slope value
+                        .append(" degree.");
             }
         }
 
@@ -244,7 +232,6 @@ class VoiceAnnouncementUtils {
 
     static Spannable createRunStatistics(Context context, TrackStatistics trackStatistics, UnitSystem unitSystem) {
         SpannableStringBuilder builder = new SpannableStringBuilder();
-        Distance totalDistance = trackStatistics.getTotalDistance();
         Speed averageMovingSpeed = trackStatistics.getAverageMovingSpeed();
         Float maxSpeed = trackStatistics.getMaximumSpeedPerRun();
         double averageSlope= calculateAverageSlope(trackStatistics.getDistanceRun(),trackStatistics.getAltitudeRun(),0f);
