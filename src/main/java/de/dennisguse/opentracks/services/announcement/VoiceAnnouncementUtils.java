@@ -231,7 +231,7 @@ class VoiceAnnouncementUtils {
             builder.append(".");
         }
         if (shouldVoiceAnnounceAverageslopeRun()) {
-            double avgSlope = CalculateAverageSlope();
+            double avgSlope = averageSlope;
             if (!Double.isNaN(avgSlope)) {
                 builder.append(" ")
                         .append("Average slope")
