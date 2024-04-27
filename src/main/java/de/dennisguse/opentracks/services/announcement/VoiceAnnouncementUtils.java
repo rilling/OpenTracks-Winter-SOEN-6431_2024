@@ -50,11 +50,11 @@ class VoiceAnnouncementUtils {
 
     static double calculateMaxSlope() {
         // This method should return the calculated maximum slope.
-        double maxSlope = currentMaxSlope;
+
         if (currentMaxSlope==null){
             return 0;
         }
-        return maxSlope;
+        return currentMaxSlope;
     }
 
 
@@ -80,7 +80,9 @@ class VoiceAnnouncementUtils {
         Distance totalDistance = trackStatistics.getTotalDistance();
         Float altitudeGain=trackStatistics.getTotalAltitudeGain();
         Float altitudeLoss=trackStatistics.getTotalAltitudeLoss();
-        Double temperature = WeatherFetchService.fetchTempData(trackStatistics.getLatitude(),trackStatistics.getLongitude());
+        Double temperature = 0d;
+        if (trackStatistics.getLatitude()!=null && trackStatistics.getLongitude()!=null)
+            WeatherFetchService.fetchTempData(trackStatistics.getLatitude(),trackStatistics.getLongitude());
 
 
         Duration skiingTime = trackStatistics.getTotalTime().minus(trackStatistics.getTotalChairliftWaitingTime());
