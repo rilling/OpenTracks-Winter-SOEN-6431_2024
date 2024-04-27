@@ -162,7 +162,7 @@ public class VoiceAnnouncementManager implements SharedPreferences.OnSharedPrefe
             announce = true;
         }
 
-        if (PreferencesUtils.shouldVoiceAnnounceMaxSpeedRun()){
+        if (PreferencesUtils.shouldVoiceAnnounceMaxSpeedRun() && PreferencesUtils.shouldVoiceAnnounceAverageslopeRun()){
             announce = true;
         }
 
