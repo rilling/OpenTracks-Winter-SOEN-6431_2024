@@ -47,17 +47,19 @@ class VoiceAnnouncementUtils {
     private VoiceAnnouncementUtils() {
     }
 
-    static double calculateMaxSlope() {
-
+    static double calculateMaxSlope(Float altitudeGain, Float altitudeLoss) {
         // This method should return the calculated maximum slope.
-        return 0.0;
+        double maxSlope = 0;
+        if (altitudeGain != null && altitudeLoss != null) {
+            maxSlope = Math.max(altitudeGain, altitudeLoss);
+        }
+        return maxSlope;
     }
 
     static double CalculateAverageSlope() {
         // This is dummy methods to fetch or calculate the average slope.
         return 10.0;
     }
-
 
 
     private static double calculateAverageSlope(Distance totalDistance, Float altitudeGain, Float altitudeLoss) {
@@ -129,7 +131,7 @@ class VoiceAnnouncementUtils {
         }
 
         if (shouldVoiceAnnounceMaxSlope()) {
-            double maxSlope = calculateMaxSlope(); // Calculate the maximum slope based on elevation data
+            double maxSlope = calculateMaxSlope(altitudeGain,altitudeLoss); // Calculate the maximum slope based on elevation data
             if (!Double.isNaN(maxSlope)) {
                 builder.append(" ")
                         .append(context.getString(R.string.settings_announcements_max_slope))
