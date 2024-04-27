@@ -362,6 +362,7 @@ limitations under the License.
     <string name="settings_gps_title">GPS</string>
     <string name="settings_gps_summary">Time interval, Distance interval, Max Distance, Accuracy</string>
 
+    <string name="ski_profile_favorite_resort_ski_resort_title">Favorite Ski Resort</string>
     <string name="ski_profile_statistics_title">Ski Maintenance Statistics</string>
     <string name="ski_profile_sharpening_info_title">Sharpening information</string>
     <string name="ski_profile_waxing_info_title">Waxing information</string>
