@@ -1,4 +1,4 @@
-package de.dennisguse.opentracks.settings;
+package de.dennisguse.opentracks.settings.skiProfile;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
